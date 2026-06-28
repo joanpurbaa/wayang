@@ -23,5 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-public
-.comment-remover-backups
+public/
+.comment-remover-backups/
