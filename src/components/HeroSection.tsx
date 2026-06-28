@@ -10,7 +10,6 @@ import {
 export default function HeroSection() {
 	const [showCurtain, setShowCurtain] = useState(true);
 
-	// Mouse Parallax Setup
 	const mouseX = useMotionValue(0);
 	const mouseY = useMotionValue(0);
 
@@ -18,11 +17,9 @@ export default function HeroSection() {
 	const smoothX = useSpring(mouseX, springConfig);
 	const smoothY = useSpring(mouseY, springConfig);
 
-	// Pergerakan teks (sedikit dikurangi intensitasnya agar tidak menabrak model 3D secara agresif)
 	const textX = useTransform(smoothX, [-0.5, 0.5], [25, -25]);
 	const textY = useTransform(smoothY, [-0.5, 0.5], [15, -15]);
 
-	// Latar belakang pendar emas mengikuti mouse perlahan
 	const bgX = useTransform(smoothX, [-0.5, 0.5], [-40, 40]);
 	const bgY = useTransform(smoothY, [-0.5, 0.5], [-30, 30]);
 
