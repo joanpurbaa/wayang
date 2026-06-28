@@ -4,6 +4,8 @@ import HeroSection from "./components/HeroSection";
 import TokohSection from "./components/TokohSection";
 // import LoreSection from "./components/LoreSection";
 import WayangBackground from "./components/WayangBackground";
+// import partsection
+import PartsSection from "./components/partsSection";
 import AudioPlayer from "./components/AudioPlayer";
 import CustomCursor from "./components/CustomCursor";
 
@@ -22,6 +24,7 @@ export default function App() {
 			{/* Scrollable content */}
 			<main className="relative z-10 bg-transparent text-[#F5F5F5] font-sans">
 				<HeroSection />
+				<PartsSection />
 				<TokohSection />
 				{/* <DalangMode /> */}
 				{/* <LoreSection /> */}
