@@ -1,17 +1,17 @@
 "use client";
 import { motion } from "framer-motion";
-import { useRef, Suspense } from "react";
+import { useRef, Suspense, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Stage, Center } from "@react-three/drei";
 import * as THREE from "three";
 
-// Konfigurasi Data 4 Tokoh dengan path model 3D masing-masing
+// ── Konfigurasi Data 4 Tokoh ──────────────────────────────────────────────────
 const TOKOH = [
 	{
 		id: "arjuna",
 		nama: "Arjuna",
 		gelar: "Sang Panah Dewa",
-		glbPath: "/wayang.glb", // Menggunakan file wayang.glb yang kamu miliki
+		glbPath: "/wayang.glb",
 		warna: "#C8922A",
 		r: 200,
 		g: 146,
@@ -50,7 +50,7 @@ const TOKOH = [
 			"Kesetiaan tanpa syarat kepada kebenaran adalah manifestasi tertinggi dari kekuatan jiwa.",
 		sifat: ["Suci", "Pemberani", "Abadi"],
 		deskripsi:
-			"Ksatria berwujud kera putih yang sakti mandraguna dan berumur panjang. Panglima perang andalan Sri Rama yang meruntuhkan Alengka ini melambangkan keteguhan iman, kesucian fisik, serta kesetiaan mutlak.",
+			"Ksatria berwujud kera putih yang sakti mandraguna. Panglima perang andalan Sri Rama yang meruntuhkan Alengka ini melambangkan keteguhan iman, kesucian fisik, serta kesetiaan mutlak.",
 	},
 	{
 		id: "cepot",
@@ -69,26 +69,45 @@ const TOKOH = [
 	},
 ];
 
-// Komponen Pembungkus Model 3D untuk Auto-Rotate + Mengatur Kilau Material Glos/Kaca
+// ── Skeleton loader saat GLB belum siap ──────────────────────────────────────
+function ModelSkeleton({ r, g, b }: { r: number; g: number; b: number }) {
+	return (
+		<div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+			{/* Silhouette wayang animasi pulse */}
+			<div
+				className="w-32 h-64 rounded-full animate-pulse"
+				style={{
+					background: `radial-gradient(ellipse at 50% 30%, rgba(${r},${g},${b},0.15) 0%, rgba(${r},${g},${b},0.04) 60%, transparent 100%)`,
+					boxShadow: `0 0 40px rgba(${r},${g},${b},0.1)`,
+				}}
+			/>
+			<div
+				className="text-xs tracking-[0.3em] uppercase animate-pulse"
+				style={{ color: `rgba(${r},${g},${b},0.4)` }}>
+				Memuat model...
+			</div>
+		</div>
+	);
+}
+
+// ── Model 3D dengan auto-rotate ───────────────────────────────────────────────
 function WayangModel({ url }: { url: string }) {
 	const { scene } = useGLTF(url);
 	const modelRef = useRef<THREE.Group>(null);
 
-	// Efek rotasi otomatis yang halus agar pantulan cahaya bergerak di sekitar model
 	useFrame((state) => {
 		if (modelRef.current) {
 			modelRef.current.rotation.y = state.clock.getElapsedTime() * 0.25;
 		}
 	});
 
-	// Iterasi material objek untuk mengoptimalkan properti pantulan cahaya dan refleksi
 	scene.traverse((child) => {
 		if ((child as THREE.Mesh).isMesh) {
 			const mesh = child as THREE.Mesh;
 			if (mesh.material) {
 				const mat = mesh.material as THREE.MeshStandardMaterial;
-				mat.roughness = Math.min(mat.roughness, 0.2); // Membuat tekstur lebih licin/halus
-				mat.metalness = Math.max(mat.metalness, 0.4); // Meningkatkan sifat reflektif metalik
+				mat.roughness = Math.min(mat.roughness, 0.2);
+				mat.metalness = Math.max(mat.metalness, 0.4);
 			}
 		}
 	});
@@ -96,15 +115,106 @@ function WayangModel({ url }: { url: string }) {
 	return (
 		<group ref={modelRef}>
 			<Center>
-				<primitive object={scene} object-id="wayang-root" />
+				<primitive object={scene} />
 			</Center>
 		</group>
 	);
 }
 
+// ── Canvas 3D — hanya dirender setelah visible di viewport ───────────────────
+function LazyCanvas({
+	glbPath,
+	t,
+	shouldLoad,
+}: {
+	glbPath: string;
+	t: (typeof TOKOH)[0];
+	shouldLoad: boolean;
+}) {
+	if (!shouldLoad) {
+		return <ModelSkeleton r={t.r} g={t.g} b={t.b} />;
+	}
+
+	return (
+		<Canvas
+			camera={{ position: [0, 0, 12], fov: 40 }}
+			gl={{ antialias: true, alpha: true }}
+			// frameloop="demand" = render hanya saat ada perubahan (hemat GPU)
+			// Tapi karena ada rotasi terus, pakai "always" — lebih efisien dari default
+			frameloop="always"
+			performance={{ min: 0.5 }} // turunkan DPR otomatis kalau GPU kewalahan
+		>
+			<ambientLight intensity={0.5} />
+			<spotLight
+				position={[15, 20, 10]}
+				angle={0.3}
+				penumbra={1}
+				intensity={2.5}
+				castShadow={false}
+			/>
+			<directionalLight position={[-10, 5, -5]} intensity={1} color="#ffffff" />
+			<pointLight
+				position={[0, -5, 5]}
+				intensity={1.2}
+				color={`rgb(${t.r},${t.g},${t.b})`}
+			/>
+
+			<Suspense fallback={null}>
+				<Stage
+					preset="portrait"
+					intensity={1}
+					environment="studio"
+					adjustCamera={true}
+					shadows={false}>
+					<WayangModel url={glbPath} />
+				</Stage>
+			</Suspense>
+
+			<OrbitControls
+				enableZoom={false}
+				enablePan={false}
+				maxPolarAngle={Math.PI / 1.8}
+				minPolarAngle={Math.PI / 2.5}
+			/>
+		</Canvas>
+	);
+}
+
+// ── Hook: deteksi apakah elemen sudah masuk viewport ─────────────────────────
+function useInViewOnce(
+	rootMargin = "200px",
+): [React.RefObject<HTMLDivElement | null>, boolean] {
+	const ref = useRef<HTMLDivElement | null>(null);
+	const [isVisible, setIsVisible] = useState(false);
+
+	useEffect(() => {
+		const el = ref.current;
+		if (!el || isVisible) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setIsVisible(true);
+					observer.disconnect(); // cukup trigger sekali
+				}
+			},
+			{ rootMargin }, // mulai load 200px sebelum masuk viewport
+		);
+
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [isVisible, rootMargin]);
+
+	return [ref, isVisible];
+}
+
+// ── Kartu Tokoh ───────────────────────────────────────────────────────────────
 function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 	const cardRef = useRef<HTMLDivElement>(null);
 	const borderRef = useRef<HTMLDivElement>(null);
+
+	// Lazy load: GLB hanya di-fetch saat card mendekati viewport
+	const [observerRef, shouldLoad] = useInViewOnce("300px");
 
 	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
 		const card = cardRef.current;
@@ -147,219 +257,195 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 		<div
 			className="sticky w-full"
 			style={{ top: `calc(60px + ${index * 32}px)` }}>
-			<motion.div
-				initial={{ opacity: 0, y: 60 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				viewport={{ once: true, margin: "-5%" }}
-				transition={{ duration: 0.7, ease: "easeOut" }}>
-				<div
-					ref={cardRef}
-					onMouseMove={handleMouseMove}
-					onMouseLeave={handleMouseLeave}
-					className="relative rounded-[40px] overflow-hidden cursor-default group"
-					style={{
-						transition: "transform 0.5s cubic-bezier(0.23,1,0.32,1)",
-						willChange: "transform",
-					}}>
-					{/* ── Lapisan Kaca Gelap (Glassmorphism Base) ── */}
+			{/* Observer anchor — ref di div luar agar deteksi lebih awal */}
+			<div ref={observerRef}>
+				<motion.div
+					initial={{ opacity: 0, y: 60 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true, margin: "-5%" }}
+					transition={{ duration: 0.7, ease: "easeOut" }}>
 					<div
-						className="absolute inset-0 rounded-[40px]"
+						ref={cardRef}
+						onMouseMove={handleMouseMove}
+						onMouseLeave={handleMouseLeave}
+						className="relative rounded-[40px] overflow-hidden cursor-default group"
 						style={{
-							background: `linear-gradient(145deg,
-                rgba(24, 20, 16, 0.85) 0%,
-                rgba(10, 9, 7, 0.93) 50%,
-                rgba(18, 15, 12, 0.88) 100%
-              )`,
-							backdropFilter: "blur(40px)",
-							WebkitBackdropFilter: "blur(40px)",
-						}}
-					/>
+							transition: "transform 0.5s cubic-bezier(0.23,1,0.32,1)",
+							willChange: "transform",
+						}}>
+						{/* Glassmorphism Base */}
+						<div
+							className="absolute inset-0 rounded-[40px]"
+							style={{
+								background: `linear-gradient(145deg,
+                  rgba(24,20,16,0.85) 0%,
+                  rgba(10,9,7,0.93) 50%,
+                  rgba(18,15,12,0.88) 100%
+                )`,
+								backdropFilter: "blur(40px)",
+								WebkitBackdropFilter: "blur(40px)",
+							}}
+						/>
 
-					{/* Shimmering Border Rim */}
-					<div
-						ref={borderRef}
-						className="absolute inset-0 rounded-[40px] pointer-events-none"
-						style={{
-							padding: "2px",
-							background: `linear-gradient(145deg,
-                rgba(${t.r + 60},${t.g + 50},${t.b + 10},0.55) 0%,
-                rgba(${t.r},${t.g},${t.b},0.12) 35%,
-                rgba(60,45,15,0.06) 65%,
-                rgba(${t.r + 50},${t.g + 40},${t.b},0.38) 100%
-              )`,
-							WebkitMask:
-								"linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-							WebkitMaskComposite: "xor",
-							maskComposite: "exclude",
-							zIndex: 10,
-							transition: "background 0.15s ease",
-						}}
-					/>
+						{/* Shimmering Border */}
+						<div
+							ref={borderRef}
+							className="absolute inset-0 rounded-[40px] pointer-events-none"
+							style={{
+								padding: "2px",
+								background: `linear-gradient(145deg,
+                  rgba(${t.r + 60},${t.g + 50},${t.b + 10},0.55) 0%,
+                  rgba(${t.r},${t.g},${t.b},0.12) 35%,
+                  rgba(60,45,15,0.06) 65%,
+                  rgba(${t.r + 50},${t.g + 40},${t.b},0.38) 100%
+                )`,
+								WebkitMask:
+									"linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+								WebkitMaskComposite: "xor",
+								maskComposite: "exclude",
+								zIndex: 10,
+								transition: "background 0.15s ease",
+							}}
+						/>
 
-					{/* Top glow line */}
-					<div
-						className="absolute top-0 left-0 right-0 pointer-events-none rounded-t-[40px]"
-						style={{
-							height: "1.5px",
-							background: `linear-gradient(90deg, transparent 15%, rgba(${t.r},${t.g},${t.b},0.6) 50%, transparent 85%)`,
-							boxShadow: `0 0 35px 3px rgba(${t.r},${t.g},${t.b},0.35)`,
-							zIndex: 11,
-						}}
-					/>
+						{/* Top glow line */}
+						<div
+							className="absolute top-0 left-0 right-0 pointer-events-none rounded-t-[40px]"
+							style={{
+								height: "1.5px",
+								background: `linear-gradient(90deg, transparent 15%, rgba(${t.r},${t.g},${t.b},0.6) 50%, transparent 85%)`,
+								boxShadow: `0 0 35px 3px rgba(${t.r},${t.g},${t.b},0.35)`,
+								zIndex: 11,
+							}}
+						/>
 
-					{/* Content Layout */}
-					<div className="relative z-[5] p-10 md:p-16">
-						<div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
-							{/* KOLOM KIRI: Frame Canvas 3D Interaktif Raksasa */}
-							<div className="md:col-span-5 w-full">
-								<div className="relative rounded-[30px] overflow-hidden shadow-2xl border border-white/5 w-full min-h-[480px] md:min-h-[550px] flex items-center justify-center">
-									{/* Integrasi React Three Fiber Canvas */}
-									<div className="absolute inset-0 w-full h-full z-[1]">
-										<Canvas
-											camera={{ position: [0, 0, 12], fov: 40 }}
-											gl={{ antialias: true, alpha: true }}>
-											<ambientLight intensity={0.5} />
+						{/* Content */}
+						<div className="relative z-[5] p-10 md:p-16">
+							<div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+								{/* Kolom Kiri: Canvas 3D Lazy */}
+								<div className="md:col-span-5 w-full">
+									<div className="relative rounded-[30px] overflow-hidden shadow-2xl border border-white/5 w-full min-h-[480px] md:min-h-[550px] flex items-center justify-center">
+										{/* Background gradient gelap di belakang canvas */}
+										<div
+											className="absolute inset-0"
+											style={{
+												background: `radial-gradient(ellipse at 50% 40%, rgba(${t.r},${t.g},${t.b},0.06) 0%, rgba(5,4,3,0.95) 70%)`,
+											}}
+										/>
 
-											{/* Konfigurasi Lampu Studio Sorot Atas-Samping untuk menangkap refleksi bodi */}
-											<spotLight
-												position={[15, 20, 10]}
-												angle={0.3}
-												penumbra={1}
-												intensity={2.5}
-												castShadow
-											/>
-											<directionalLight
-												position={[-10, 5, -5]}
-												intensity={1}
-												color="#ffffff"
-											/>
-											<pointLight
-												position={[0, -5, 5]}
-												intensity={1.2}
-												color={`rgb(${t.r},${t.g},${t.b})`}
-											/>
+										{/* Canvas atau Skeleton — bergantung shouldLoad */}
+										<div className="absolute inset-0 w-full h-full z-[1]">
+											<LazyCanvas glbPath={t.glbPath} t={t} shouldLoad={shouldLoad} />
+										</div>
 
-											<Suspense fallback={null}>
-												{/* Stage menangani auto-scaling, penyelarasan posisi tengah, serta penataan cahaya sinematik */}
-												<Stage
-													preset="portrait"
-													intensity={1}
-													environment="studio"
-													adjustCamera={true}
-													shadows={false}>
-													<WayangModel url={t.glbPath} />
-												</Stage>
-											</Suspense>
+										{/* Gradien bawah */}
+										<div
+											className="absolute inset-0 z-[2] pointer-events-none"
+											style={{
+												background:
+													"linear-gradient(to top, rgba(10,8,6,0.9) 0%, rgba(10,8,6,0.1) 40%, transparent 70%)",
+											}}
+										/>
 
-											{/* Kontrol Rotasi Drag Mouse: Auto-rotate dinonaktifkan saat user melakukan drag */}
-											<OrbitControls
-												enableZoom={false}
-												enablePan={false}
-												maxPolarAngle={Math.PI / 1.8}
-												minPolarAngle={Math.PI / 2.5}
-											/>
-										</Canvas>
+										{/* Inner rim */}
+										<div
+											className="absolute inset-0 rounded-[30px] z-[4] pointer-events-none"
+											style={{ border: `1px solid rgba(${t.r},${t.g},${t.b},0.15)` }}
+										/>
+									</div>
+								</div>
+
+								{/* Kolom Kanan: Info */}
+								<div className="md:col-span-7 flex flex-col gap-8 w-full text-left">
+									<div>
+										<h3
+											className="font-serif text-[clamp(3rem,5vw,4.5rem)] font-normal leading-none mb-3"
+											style={{
+												fontFamily: "'Cormorant Garamond', Georgia, serif",
+												color: t.warna,
+												textShadow: `0 2px 30px rgba(${t.r},${t.g},${t.b},0.5), 0 0 60px rgba(${t.r},${t.g},${t.b},0.2)`,
+											}}>
+											{t.nama}
+										</h3>
+										<p
+											className="uppercase tracking-[0.4em] text-[13px] md:text-[14px] font-medium"
+											style={{ color: "rgba(255,255,255,0.45)" }}>
+											{t.gelar}
+										</p>
 									</div>
 
-									{/* Gradien kedalaman panggung transparan di atas canvas 3D */}
+									{/* Badges */}
+									<div className="flex flex-wrap gap-3">
+										{t.sifat.map((s) => (
+											<span
+												key={s}
+												className="text-[13px] font-semibold tracking-wider px-5 py-2 rounded-full border transition-all duration-300"
+												style={{
+													borderColor: `rgba(${t.r},${t.g},${t.b},0.4)`,
+													color: t.warna,
+													background: `rgba(${t.r},${t.g},${t.b},0.08)`,
+													boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
+												}}>
+												{s}
+											</span>
+										))}
+									</div>
+
+									{/* Divider */}
 									<div
-										className="absolute inset-0 z-[2] pointer-events-none"
 										style={{
-											background:
-												"linear-gradient(to top, rgba(10,8,6,0.9) 0%, rgba(10,8,6,0.1) 40%, transparent 70%)",
+											height: "1px",
+											background: `linear-gradient(90deg, rgba(${t.r},${t.g},${t.b},0.3) 0%, rgba(${t.r},${t.g},${t.b},0.08) 80%, transparent 100%)`,
 										}}
 									/>
 
-									{/* Bingkai Rim Kaca Interior */}
-									<div
-										className="absolute inset-0 rounded-[30px] z-[4] pointer-events-none"
-										style={{
-											border: `1px solid rgba(${t.r},${t.g},${t.b},0.15)`,
-										}}
-									/>
-								</div>
-							</div>
-
-							{/* KOLOM KANAN: Informasi Detail & Filosofi */}
-							<div className="md:col-span-7 flex flex-col gap-8 w-full text-left">
-								<div>
-									<h3
-										className="font-serif text-[clamp(3rem,5vw,4.5rem)] font-normal leading-none mb-3"
-										style={{
-											fontFamily: "'Cormorant Garamond', Georgia, serif",
-											color: t.warna,
-											textShadow: `0 2px 30px rgba(${t.r},${t.g},${t.b},0.5), 0 0 60px rgba(${t.r},${t.g},${t.b},0.2)`,
-										}}>
-										{t.nama}
-									</h3>
+									{/* Deskripsi */}
 									<p
-										className="uppercase tracking-[0.4em] text-[13px] md:text-[14px] font-medium"
-										style={{ color: "rgba(255,255,255,0.45)" }}>
-										{t.gelar}
+										className="text-base md:text-lg text-justify font-light leading-relaxed tracking-wide"
+										style={{ color: "rgba(255,255,255,0.75)" }}>
+										{t.deskripsi}
 									</p>
-								</div>
 
-								{/* Sifat Badges */}
-								<div className="flex flex-wrap gap-3">
-									{t.sifat.map((s) => (
-										<span
-											key={s}
-											className="text-[13px] font-semibold tracking-wider px-5 py-2 rounded-full border transition-all duration-300"
+									{/* Filosofi */}
+									<div
+										className="pl-7 pr-6 py-5 rounded-r-2xl relative overflow-hidden shadow-inner border-y border-r border-white/[0.02]"
+										style={{
+											borderLeft: `4px solid rgba(${t.r},${t.g},${t.b},0.6)`,
+											background: `rgba(${t.r},${t.g},${t.b},0.05)`,
+										}}>
+										<p
+											className="italic text-[20px] md:text-[23px] leading-relaxed relative z-[1]"
 											style={{
-												borderColor: `rgba(${t.r},${t.g},${t.b},0.4)`,
-												color: t.warna,
-												background: `rgba(${t.r},${t.g},${t.b},0.08)`,
-												boxShadow: `inset 0 1px 0 rgba(255,255,255,0.05)`,
+												fontFamily: "'Cormorant Garamond', Georgia, serif",
+												color: "rgba(240,225,190,0.95)",
 											}}>
-											{s}
-										</span>
-									))}
-								</div>
-
-								{/* Divider Line */}
-								<div
-									style={{
-										height: "1px",
-										background: `linear-gradient(90deg, rgba(${t.r},${t.g},${t.b},0.3) 0%, rgba(${t.r},${t.g},${t.b},0.08) 80%, transparent 100%)`,
-									}}
-								/>
-
-								{/* Deskripsi Tokoh */}
-								<p
-									className="text-base md:text-lg text-justify font-light leading-relaxed tracking-wide"
-									style={{ color: "rgba(255,255,255,0.75)" }}>
-									{t.deskripsi}
-								</p>
-
-								{/* Kotak Kutipan Filosofi */}
-								<div
-									className="pl-7 pr-6 py-5 rounded-r-2xl relative overflow-hidden shadow-inner border-y border-r border-white/[0.02]"
-									style={{
-										borderLeft: `4px solid rgba(${t.r},${t.g},${t.b},0.6)`,
-										background: `rgba(${t.r},${t.g},${t.b},0.05)`,
-									}}>
-									<p
-										className="italic text-[20px] md:text-[23px] leading-relaxed relative z-[1]"
-										style={{
-											fontFamily: "'Cormorant Garamond', Georgia, serif",
-											color: "rgba(240,225,190,0.95)",
-										}}>
-										"{t.filosofi}"
-									</p>
+											"{t.filosofi}"
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</motion.div>
+				</motion.div>
+			</div>
 		</div>
 	);
 }
 
+// ── Preload hanya tokoh pertama saat idle ─────────────────────────────────────
+// Tokoh 2-4 akan di-fetch otomatis via IntersectionObserver saat scroll
+if (typeof window !== "undefined") {
+	// requestIdleCallback: jalankan saat browser idle, tidak blok render awal
+	const ric =
+		(window as any).requestIdleCallback ??
+		((cb: () => void) => setTimeout(cb, 200));
+	ric(() => useGLTF.preload("/wayang.glb"));
+}
+
+// ── Section Utama ─────────────────────────────────────────────────────────────
 export default function TokohSection() {
 	return (
 		<section className="relative py-40 px-4 md:px-12" id="tokoh">
-			{/* Garis Ornamen Vertikal */}
 			<div
 				className="absolute left-0 top-0 h-full w-px pointer-events-none"
 				style={{
@@ -369,7 +455,7 @@ export default function TokohSection() {
 			/>
 
 			<div className="max-w-7xl mx-auto">
-				{/* Header Section */}
+				{/* Header */}
 				<div className="mb-32 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 px-4">
 					<div>
 						<p
@@ -395,7 +481,7 @@ export default function TokohSection() {
 					</p>
 				</div>
 
-				{/* Stacking cards */}
+				{/* Cards */}
 				<div className="flex flex-col gap-24 md:gap-36">
 					{TOKOH.map((t, index) => (
 						<TokohCard key={t.id} t={t} index={index} />

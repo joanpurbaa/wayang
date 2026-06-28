@@ -4,12 +4,41 @@ import HeroSection from "./components/HeroSection";
 import TokohSection from "./components/TokohSection";
 // import LoreSection from "./components/LoreSection";
 import WayangBackground from "./components/WayangBackground";
-// import partsection
 import PartsSection from "./components/partsSection";
 import AudioPlayer from "./components/AudioPlayer";
 import CustomCursor from "./components/CustomCursor";
+import { useGLTF } from "@react-three/drei";
+import Lenis from "lenis";
+import { useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Register plugin GSAP — wajib sebelum dipakai
+gsap.registerPlugin(ScrollTrigger);
+
+useGLTF.setDecoderPath("/draco/");
 
 export default function App() {
+	useEffect(() => {
+		const lenis = new Lenis({
+			duration: 1.4,
+			easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+			smoothWheel: true,
+		});
+
+		// Sync Lenis scroll ke GSAP ScrollTrigger
+		lenis.on("scroll", ScrollTrigger.update);
+
+		const ticker = (time: number) => lenis.raf(time * 1000);
+		gsap.ticker.add(ticker);
+		gsap.ticker.lagSmoothing(0);
+
+		return () => {
+			lenis.destroy();
+			gsap.ticker.remove(ticker); // cleanup ticker biar tidak leak
+		};
+	}, []);
+
 	return (
 		<div className="relative">
 			{/* Custom cursor — paling atas */}
