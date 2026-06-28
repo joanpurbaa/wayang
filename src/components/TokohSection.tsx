@@ -1,17 +1,26 @@
 "use client";
 import { motion } from "framer-motion";
+<<<<<<< HEAD
 import { useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Stage, Center } from "@react-three/drei";
 import * as THREE from "three";
 
 // Konfigurasi Data 4 Tokoh dengan path model 3D masing-masing
+=======
+import { useRef } from "react";
+
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 const TOKOH = [
 	{
 		id: "arjuna",
 		nama: "Arjuna",
 		gelar: "Sang Panah Dewa",
+<<<<<<< HEAD
 		glbPath: "/wayang.glb", // Menggunakan file wayang.glb yang kamu miliki
+=======
+		img: "/arjuna.png",
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 		warna: "#C8922A",
 		r: 200,
 		g: 146,
@@ -26,7 +35,11 @@ const TOKOH = [
 		id: "semar",
 		nama: "Semar",
 		gelar: "Sang Pamomong Agung",
+<<<<<<< HEAD
 		glbPath: "/semar.glb",
+=======
+		img: "/semar.png",
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 		warna: "#A8892A",
 		r: 168,
 		g: 137,
@@ -38,6 +51,7 @@ const TOKOH = [
 			"Wujud fisik Semar yang gemuk dan sederhana menyembunyikan kesaktian setara dewa. Ia adalah pamomong para ksatria Pandawa — sosok rakyat jelata yang sesungguhnya paling mulia.",
 	},
 	{
+<<<<<<< HEAD
 		id: "hanoman",
 		nama: "Hanoman",
 		gelar: "Sang Ksatria Putih",
@@ -57,6 +71,12 @@ const TOKOH = [
 		nama: "Cepot",
 		gelar: "Sang Badut Bijak",
 		glbPath: "/cepot.glb",
+=======
+		id: "cepot",
+		nama: "Cepot",
+		gelar: "Sang Badut Bijak",
+		img: "/cepot.png",
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 		warna: "#B84040",
 		r: 184,
 		g: 64,
@@ -67,6 +87,7 @@ const TOKOH = [
 		deskripsi:
 			"Anak sulung Semar yang paling populer di tanah Sunda. Di balik lelucon dan tingkahnya yang kocak, Cepot kerap menyampaikan kritik sosial paling tajam yang bahkan raja pun tak berani ucapkan.",
 	},
+<<<<<<< HEAD
 ];
 
 // Komponen Pembungkus Model 3D untuk Auto-Rotate + Mengatur Kilau Material Glos/Kaca
@@ -102,6 +123,25 @@ function WayangModel({ url }: { url: string }) {
 	);
 }
 
+=======
+	{
+		id: "gatotkaca",
+		nama: "Gatotkaca",
+		gelar: "Sang Satria Pringgandani",
+		img: "/gatotkaca.png",
+		warna: "#A8892A",
+		r: 168,
+		g: 137,
+		b: 42,
+		filosofi:
+			"Kekuatan tanpa kebijaksanaan hanya akan menghancurkan diri sendiri.",
+		sifat: ["Perkasa", "Loyal", "Pemberani"],
+		deskripsi:
+			"Putra Bima dengan otot kawat tulang besi. Gatotkaca mampu terbang menembus langit ketujuh. Ia gugur di medan Kurusetra demi membela para pamannya — mati sebagai pahlawan sejati.",
+	},
+];
+
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 	const cardRef = useRef<HTMLDivElement>(null);
 	const borderRef = useRef<HTMLDivElement>(null);
@@ -147,25 +187,45 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 		<div
 			className="sticky w-full"
 			style={{ top: `calc(60px + ${index * 32}px)` }}>
+<<<<<<< HEAD
+=======
+			{" "}
+			{/* Offset top disesuaikan agar tumpukan masif tetap rapi */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 			<motion.div
 				initial={{ opacity: 0, y: 60 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true, margin: "-5%" }}
 				transition={{ duration: 0.7, ease: "easeOut" }}>
+<<<<<<< HEAD
+=======
+				{/* Card wrapper */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 				<div
 					ref={cardRef}
 					onMouseMove={handleMouseMove}
 					onMouseLeave={handleMouseLeave}
+<<<<<<< HEAD
 					className="relative rounded-[40px] overflow-hidden cursor-default group"
+=======
+					className="relative rounded-[40px] overflow-hidden cursor-default shadow-[0_40px_90px_rgba(0,0,0,0.9)]"
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 					style={{
 						transition: "transform 0.5s cubic-bezier(0.23,1,0.32,1)",
 						willChange: "transform",
 					}}>
+<<<<<<< HEAD
 					{/* ── Lapisan Kaca Gelap (Glassmorphism Base) ── */}
+=======
+					{/* ── Glass layers ── */}
+
+					{/* 1. Dark glass base */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 					<div
 						className="absolute inset-0 rounded-[40px]"
 						style={{
 							background: `linear-gradient(145deg,
+<<<<<<< HEAD
                 rgba(24, 20, 16, 0.85) 0%,
                 rgba(10, 9, 7, 0.93) 50%,
                 rgba(18, 15, 12, 0.88) 100%
@@ -176,11 +236,27 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 					/>
 
 					{/* Shimmering Border Rim */}
+=======
+                rgba(35,30,22,0.95) 0%,
+                rgba(14,12,9,0.98) 50%,
+                rgba(24,20,14,0.96) 100%
+              )`,
+							backdropFilter: "blur(30px)",
+							WebkitBackdropFilter: "blur(30px)",
+						}}
+					/>
+
+					{/* 2. Shimmering border rim */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 					<div
 						ref={borderRef}
 						className="absolute inset-0 rounded-[40px] pointer-events-none"
 						style={{
+<<<<<<< HEAD
 							padding: "2px",
+=======
+							padding: "2px", // Border rim disesuaikan ketebalannya dengan skala raksasa
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 							background: `linear-gradient(145deg,
                 rgba(${t.r + 60},${t.g + 50},${t.b + 10},0.55) 0%,
                 rgba(${t.r},${t.g},${t.b},0.12) 35%,
@@ -196,7 +272,11 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 						}}
 					/>
 
+<<<<<<< HEAD
 					{/* Top glow line */}
+=======
+					{/* 3. Top glow line (accent color) */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 					<div
 						className="absolute top-0 left-0 right-0 pointer-events-none rounded-t-[40px]"
 						style={{
@@ -207,6 +287,7 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 						}}
 					/>
 
+<<<<<<< HEAD
 					{/* Content Layout */}
 					<div className="relative z-[5] p-10 md:p-16">
 						<div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
@@ -275,11 +356,87 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 										className="absolute inset-0 rounded-[30px] z-[4] pointer-events-none"
 										style={{
 											border: `1px solid rgba(${t.r},${t.g},${t.b},0.15)`,
+=======
+					{/* 4. Specular highlight top-left */}
+					<div
+						className="absolute top-0 left-0 right-0 pointer-events-none rounded-t-[40px] opacity-0 group-hover:opacity-100"
+						style={{
+							height: "65%",
+							background: `linear-gradient(160deg,
+                rgba(255,240,180,0.09) 0%,
+                rgba(255,230,160,0.04) 30%,
+                transparent 60%
+              )`,
+							transition: "opacity 0.35s",
+							zIndex: 9,
+						}}
+					/>
+
+					{/* 5. Shimmer sweep */}
+					<div
+						className="absolute inset-0 rounded-[40px] pointer-events-none opacity-0 group-hover:opacity-100"
+						style={{
+							background: `linear-gradient(115deg,
+                transparent 25%,
+                rgba(255,245,190,0.08) 50%,
+                transparent 75%
+              )`,
+							transition: "opacity 0.4s ease",
+							zIndex: 8,
+						}}
+					/>
+
+					{/* ── Card content (Layout Grid Proporsional Dua Kolom) ── */}
+					<div className="relative z-[5] p-10 md:p-16 group">
+						<div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+							{/* KOLOM KIRI: Frame Gambar Seni Wayang Raksasa (5/12 bagian) */}
+							<div className="md:col-span-5 w-full">
+								<div className="relative rounded-[30px] overflow-hidden bg-[#050403] shadow-2xl border border-white/5 w-full min-h-[480px] md:min-h-[550px] flex items-center justify-center">
+									<img
+										src={t.img}
+										alt={t.nama}
+										className="w-full h-full object-cover object-top absolute inset-0"
+										style={{
+											filter: "brightness(0.9) contrast(1.1) saturate(0.9)",
+											transition:
+												"filter 0.5s ease, transform 0.6s cubic-bezier(0.23,1,0.32,1)",
+										}}
+									/>
+
+									{/* Gradien kedalaman gambar */}
+									<div
+										className="absolute inset-0 z-[2]"
+										style={{
+											background:
+												"linear-gradient(to top, rgba(10,8,6,1) 0%, rgba(10,8,6,0.3) 50%, transparent 80%)",
+										}}
+									/>
+
+									{/* Efek kilap internal */}
+									<div
+										className="absolute inset-0 z-[3]"
+										style={{
+											background: `linear-gradient(135deg,
+                        rgba(255,245,210,0.09) 0%,
+                        rgba(255,240,200,0.04) 25%,
+                        transparent 50%,
+                        rgba(0,0,0,0.2) 100%
+                      )`,
+										}}
+									/>
+
+									{/* Bingkai rim kaca pada gambar */}
+									<div
+										className="absolute inset-0 rounded-[30px] z-[4]"
+										style={{
+											border: `1px solid rgba(220,185,90,0.12)`,
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 										}}
 									/>
 								</div>
 							</div>
 
+<<<<<<< HEAD
 							{/* KOLOM KANAN: Informasi Detail & Filosofi */}
 							<div className="md:col-span-7 flex flex-col gap-8 w-full text-left">
 								<div>
@@ -289,6 +446,17 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 											fontFamily: "'Cormorant Garamond', Georgia, serif",
 											color: t.warna,
 											textShadow: `0 2px 30px rgba(${t.r},${t.g},${t.b},0.5), 0 0 60px rgba(${t.r},${t.g},${t.b},0.2)`,
+=======
+							{/* KOLOM KANAN: Detail Info & Filosofi (7/12 bagian) */}
+							<div className="md:col-span-7 flex flex-col gap-8 w-full text-left">
+								<div>
+									<h3
+										className="font-serif text-[clamp(3rem,5vw,4.5rem)] font-normal leading-none mb-3 transition-transform duration-300"
+										style={{
+											fontFamily: "'Cormorant Garamond', Georgia, serif",
+											color: t.warna,
+											textShadow: `0 2px 30px rgba(${t.r},${t.g},${t.b},0.6), 0 0 60px rgba(${t.r},${t.g},${t.b},0.25)`,
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 										}}>
 										{t.nama}
 									</h3>
@@ -320,18 +488,30 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 								<div
 									style={{
 										height: "1px",
+<<<<<<< HEAD
 										background: `linear-gradient(90deg, rgba(${t.r},${t.g},${t.b},0.3) 0%, rgba(${t.r},${t.g},${t.b},0.08) 80%, transparent 100%)`,
+=======
+										background: `linear-gradient(90deg, rgba(200,170,70,0.2) 0%, rgba(180,150,60,0.1) 80%, transparent 100%)`,
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 									}}
 								/>
 
 								{/* Deskripsi Tokoh */}
 								<p
 									className="text-base md:text-lg text-justify font-light leading-relaxed tracking-wide"
+<<<<<<< HEAD
 									style={{ color: "rgba(255,255,255,0.75)" }}>
 									{t.deskripsi}
 								</p>
 
 								{/* Kotak Kutipan Filosofi */}
+=======
+									style={{ color: "rgba(255,255,255,0.72)" }}>
+									{t.deskripsi}
+								</p>
+
+								{/* Kotak Kutipan Filosofi Besar */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 								<div
 									className="pl-7 pr-6 py-5 rounded-r-2xl relative overflow-hidden shadow-inner border-y border-r border-white/[0.02]"
 									style={{
@@ -342,7 +522,11 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 										className="italic text-[20px] md:text-[23px] leading-relaxed relative z-[1]"
 										style={{
 											fontFamily: "'Cormorant Garamond', Georgia, serif",
+<<<<<<< HEAD
 											color: "rgba(240,225,190,0.95)",
+=======
+											color: "rgba(240,225,190,0.92)",
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 										}}>
 										"{t.filosofi}"
 									</p>
@@ -359,7 +543,11 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 export default function TokohSection() {
 	return (
 		<section className="relative py-40 px-4 md:px-12" id="tokoh">
+<<<<<<< HEAD
 			{/* Garis Ornamen Vertikal */}
+=======
+			{/* Ornamen garis emas vertikal kiri */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 			<div
 				className="absolute left-0 top-0 h-full w-px pointer-events-none"
 				style={{
@@ -368,6 +556,10 @@ export default function TokohSection() {
 				}}
 			/>
 
+<<<<<<< HEAD
+=======
+			{/* Skala lebar kontainer dinaikkan penuh ke max-w-7xl */}
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 			<div className="max-w-7xl mx-auto">
 				{/* Header Section */}
 				<div className="mb-32 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 px-4">
@@ -378,7 +570,11 @@ export default function TokohSection() {
 							Para Tokoh
 						</p>
 						<h2
+<<<<<<< HEAD
 							className="font-serif text-6xl md:text-8xl font-light leading-tight text-white"
+=======
+							className="font-serif text-6xl md:text-8xl font-light leading-tight"
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 							style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
 							Raga &amp;{" "}
 							<em className="not-italic" style={{ color: "#c8a84a" }}>
@@ -389,9 +585,14 @@ export default function TokohSection() {
 					<p
 						className="text-base md:text-lg max-w-md leading-relaxed"
 						style={{ color: "rgba(255,255,255,0.4)" }}>
+<<<<<<< HEAD
 						Setiap karakter adalah cermin — cetak biru leluhur yang dirancang untuk
 						mengajarkan bagaimana keselarasan hidup diarungi di atas panggung
 						realitas.
+=======
+						Every character is a mirror — an ancient blueprint designed to teach us
+						how a complete human being ought to navigate reality.
+>>>>>>> 4d66e57322346b556925bc1d04452d663aa2e7c5
 					</p>
 				</div>
 
