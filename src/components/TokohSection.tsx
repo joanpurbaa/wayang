@@ -754,27 +754,53 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 
                   {/* Sorotan Bagian (muncul saat klik) atau Filosofi default */}
                   {activePart && activeDescription ? (
-                    <div
-                      className="pl-7 pr-6 py-5 rounded-r-2xl relative overflow-hidden shadow-inner border-y border-r border-white/[0.02]"
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45, ease: "easeOut" }}
+                      className="relative rounded-2xl overflow-hidden"
                       style={{
-                        borderLeft: `4px solid rgba(${t.r},${t.g},${t.b},0.6)`,
-                        background: `rgba(${t.r},${t.g},${t.b},0.08)`,
-                        transition: "all 0.4s ease",
-                      }}>
-                      <p
-                        className="text-xs uppercase tracking-[0.3em] mb-2"
-                        style={{ color: `rgba(${t.r},${t.g},${t.b},0.6)` }}>
-                        Sorotan Bagian
-                      </p>
-                      <p
-                        className="italic text-[20px] md:text-[23px] leading-relaxed relative z-[1]"
+                        background: "rgba(12,10,8,0.7)",
+                        backdropFilter: "blur(24px)",
+                        WebkitBackdropFilter: "blur(24px)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        boxShadow: `0 20px 35px -15px rgba(0,0,0,0.6), inset 0 1px 0 rgba(${t.r},${t.g},${t.b},0.15)`,
+                      }}
+                    >
+                      {/* Top accent line */}
+                      <div
+                        className="h-[2px] w-full"
                         style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif",
-                          color: "rgba(240,225,190,0.95)",
-                        }}>
-                        “{activeDescription}”
-                      </p>
-                    </div>
+                          background: `linear-gradient(90deg, rgba(${t.r},${t.g},${t.b},0.8) 0%, rgba(${t.r},${t.g},${t.b},0.2) 50%, transparent 100%)`,
+                        }}
+                      />
+                      <div className="p-6 md:p-7">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div
+                            className="w-6 h-[1px]"
+                            style={{
+                              background: `rgba(${t.r},${t.g},${t.b},0.6)`,
+                            }}
+                          />
+                          <span
+                            className="text-[11px] tracking-[0.35em] uppercase font-medium"
+                            style={{ color: `rgba(${t.r},${t.g},${t.b},0.7)` }}
+                          >
+                            Detail Bagian
+                          </span>
+                        </div>
+                        <p
+                          className="font-serif italic text-[22px] md:text-[26px] leading-snug"
+                          style={{
+                            fontFamily: "'Cormorant Garamond', Georgia, serif",
+                            color: "#fef8ec",
+                            textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                          }}
+                        >
+                          “{activeDescription}”
+                        </p>
+                      </div>
+                    </motion.div>
                   ) : (
                     <div
                       className="pl-7 pr-6 py-5 rounded-r-2xl relative overflow-hidden shadow-inner border-y border-r border-white/[0.02]"
