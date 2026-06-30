@@ -12,6 +12,10 @@ export default function AudioPlayer() {
 	const [volume] = useState(0.35); // Disederhanakan karena setVolume tidak dipakai secara dinamis
 	const [showHint, setShowHint] = useState(true);
 
+	// Simpan apakah lagu utama lagi nyala SEBELUM demo wayang dimulai,
+	// supaya bisa kita pulihkan otomatis pas demo selesai.
+	const wasPlayingBeforeDemo = useRef(false);
+
 	// Sembunyikan hint setelah 4 detik
 	useEffect(() => {
 		const t = setTimeout(() => setShowHint(false), 4000);
@@ -29,6 +33,31 @@ export default function AudioPlayer() {
 			audio.pause();
 		}
 	}, [playing, volume]);
+
+	// ── Dengarkan event dari DalangPOVSection ──────────────────────────────
+	useEffect(() => {
+		const handleDemoStart = () => {
+			// Catat state saat ini, lalu paksa lagu utama mati
+			setPlaying((current) => {
+				wasPlayingBeforeDemo.current = current;
+				return false;
+			});
+		};
+
+		const handleDemoEnd = () => {
+			// Nyalakan lagi HANYA kalau sebelumnya memang lagi diputar
+			if (wasPlayingBeforeDemo.current) {
+				setPlaying(true);
+			}
+		};
+
+		window.addEventListener("wayang-demo:start", handleDemoStart);
+		window.addEventListener("wayang-demo:end", handleDemoEnd);
+		return () => {
+			window.removeEventListener("wayang-demo:start", handleDemoStart);
+			window.removeEventListener("wayang-demo:end", handleDemoEnd);
+		};
+	}, []);
 
 	const toggle = () => setPlaying((p) => !p);
 

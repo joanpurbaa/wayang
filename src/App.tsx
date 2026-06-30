@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DalangPOVSection from "./components/DalangPOVSection";
+import SejarahSection from "./components/SejarahSection";
 
 // Register plugin GSAP — wajib sebelum dipakai
 gsap.registerPlugin(ScrollTrigger);
@@ -52,6 +53,7 @@ export default function App() {
 			<main className="relative z-10 bg-transparent text-[#F5F5F5] font-sans">
 				<HeroSection />
 				<PartsSection />
+				<SejarahSection />
 				<TokohSection />
 				<DalangPOVSection />
 				{/* <DalangMode /> */}
