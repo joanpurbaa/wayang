@@ -11,6 +11,7 @@ import Lenis from "lenis";
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import DalangPOVSection from "./components/DalangPOVSection";
 
 // Register plugin GSAP — wajib sebelum dipakai
 gsap.registerPlugin(ScrollTrigger);
@@ -52,6 +53,7 @@ export default function App() {
 				<HeroSection />
 				<PartsSection />
 				<TokohSection />
+				<DalangPOVSection />
 				{/* <DalangMode /> */}
 				{/* <LoreSection /> */}
 
