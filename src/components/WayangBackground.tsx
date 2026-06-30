@@ -18,7 +18,7 @@ function WayangModel() {
   const upperRef = useRef<THREE.Object3D | null>(null);
   const lowerRef = useRef<THREE.Object3D | null>(null);
 
-  const { scene } = useGLTF("/wayang-parts.glb");
+  const { scene } = useGLTF("/wayang-parts-optimized.glb");
   const initialized = useRef(false);
   const { size } = useThree();
   const isMobile = size.width < 768;
@@ -280,4 +280,4 @@ export default function WayangBackground() {
   );
 }
 
-useGLTF.preload("/wayang-parts.glb");
+useGLTF.preload("/wayang-parts-optimized.glb");

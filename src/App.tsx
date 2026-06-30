@@ -7,7 +7,6 @@ import WayangBackground from "./components/WayangBackground";
 import PartsSection from "./components/partsSection";
 import AudioPlayer from "./components/AudioPlayer";
 import CustomCursor from "./components/CustomCursor";
-import { useGLTF } from "@react-three/drei";
 import Lenis from "lenis";
 import { useEffect } from "react";
 import gsap from "gsap";
@@ -15,8 +14,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Register plugin GSAP — wajib sebelum dipakai
 gsap.registerPlugin(ScrollTrigger);
-
-useGLTF.setDecoderPath("/draco/");
 
 export default function App() {
 	useEffect(() => {
