@@ -104,34 +104,16 @@ const TOKOH = [
 	},
 ];
 
-function ModelSkeleton({ r, g, b }: { r: number; g: number; b: number }) {
-	return (
-		<div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-			<div
-				className="w-32 h-64 rounded-full animate-pulse"
-				style={{
-					background: `radial-gradient(ellipse at 50% 30%, rgba(${r},${g},${b},0.15) 0%, rgba(${r},${g},${b},0.04) 60%, transparent 100%)`,
-					boxShadow: `0 0 40px rgba(${r},${g},${b},0.1)`,
-				}}
-			/>
-			<div
-				className="text-xs tracking-[0.3em] uppercase animate-pulse"
-				style={{ color: `rgba(${r},${g},${b},0.4)` }}>
-				Memuat model...
-			</div>
-		</div>
-	);
-}
-
 interface InteractiveModelProps {
 	url: string;
 	r: number;
 	g: number;
 	b: number;
 	onPartClick?: (part: string | null) => void;
+	onLoaded?: () => void;
 }
 
-function InteractiveModel({ url, onPartClick }: InteractiveModelProps) {
+function InteractiveModel({ url, onPartClick, onLoaded }: InteractiveModelProps) {
 	const { scene } = useGLTF(url);
 	const groupRef = useRef<THREE.Group>(null);
 	const headRef = useRef<THREE.Object3D | null>(null);
@@ -235,7 +217,9 @@ function InteractiveModel({ url, onPartClick }: InteractiveModelProps) {
 			`[TokohSection] Mesh names for ${url}:`,
 			cloned.children.map((c) => c.name).filter(Boolean),
 		);
-	}, [scene, url]);
+
+		onLoaded?.();
+	}, [scene, url, onLoaded]);
 
 	useFrame((_, delta) => {
 		if (groupRef.current && !zoomingRef.current) {
@@ -482,6 +466,25 @@ function InteractiveModel({ url, onPartClick }: InteractiveModelProps) {
 	);
 }
 
+function ModelSkeleton({ r, g, b }: { r: number; g: number; b: number }) {
+	return (
+		<div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-[6]">
+			<div
+				className="w-32 h-64 rounded-full animate-pulse"
+				style={{
+					background: `radial-gradient(ellipse at 50% 30%, rgba(${r},${g},${b},0.15) 0%, rgba(${r},${g},${b},0.04) 60%, transparent 100%)`,
+					boxShadow: `0 0 40px rgba(${r},${g},${b},0.1)`,
+				}}
+			/>
+			<div
+				className="text-xs tracking-[0.3em] uppercase animate-pulse"
+				style={{ color: `rgba(${r},${g},${b},0.4)` }}>
+				Memuat model...
+			</div>
+		</div>
+	);
+}
+
 function LazyCanvas({
 	glbPath,
 	t,
@@ -493,48 +496,56 @@ function LazyCanvas({
 	shouldLoad: boolean;
 	onPartClick: (part: string | null) => void;
 }) {
+	const [modelReady, setModelReady] = useState(false); // ← BARU
+
 	if (!shouldLoad) {
 		return <ModelSkeleton r={t.r} g={t.g} b={t.b} />;
 	}
 
 	return (
-		<Canvas
-			camera={{ position: [0, 0, 12], fov: 40 }}
-			gl={{ antialias: true, alpha: true }}
-			frameloop="always"
-			performance={{ min: 0.5 }}>
-			<ambientLight intensity={0.5} />
-			<spotLight
-				position={[15, 20, 10]}
-				angle={0.3}
-				penumbra={1}
-				intensity={2.5}
-				castShadow={false}
-			/>
-			<directionalLight position={[-10, 5, -5]} intensity={1} color="#ffffff" />
-			<pointLight
-				position={[0, -5, 5]}
-				intensity={1.2}
-				color={`rgb(${t.r},${t.g},${t.b})`}
-			/>
+		<>
+			{/* Skeleton overlay — tampil sampai model selesai di-attach ke scene */}
+			{!modelReady && <ModelSkeleton r={t.r} g={t.g} b={t.b} />}
 
-			<Suspense fallback={null}>
-				<Stage
-					preset="portrait"
-					intensity={1}
-					environment="studio"
-					adjustCamera={false}
-					shadows={false}>
-					<InteractiveModel
-						url={glbPath}
-						r={t.r}
-						g={t.g}
-						b={t.b}
-						onPartClick={onPartClick}
-					/>
-				</Stage>
-			</Suspense>
-		</Canvas>
+			<Canvas
+				camera={{ position: [0, 0, 12], fov: 40 }}
+				gl={{ antialias: true, alpha: true }}
+				frameloop="always"
+				performance={{ min: 0.5 }}>
+				<ambientLight intensity={0.5} />
+				<spotLight
+					position={[15, 20, 10]}
+					angle={0.3}
+					penumbra={1}
+					intensity={2.5}
+					castShadow={false}
+				/>
+				<directionalLight position={[-10, 5, -5]} intensity={1} color="#ffffff" />
+				<pointLight
+					position={[0, -5, 5]}
+					intensity={1.2}
+					color={`rgb(${t.r},${t.g},${t.b})`}
+				/>
+
+				<Suspense fallback={null}>
+					<Stage
+						preset="portrait"
+						intensity={1}
+						environment="studio"
+						adjustCamera={false}
+						shadows={false}>
+						<InteractiveModel
+							url={glbPath}
+							r={t.r}
+							g={t.g}
+							b={t.b}
+							onPartClick={onPartClick}
+							onLoaded={() => setModelReady(true)} // ← BARU
+						/>
+					</Stage>
+				</Suspense>
+			</Canvas>
+		</>
 	);
 }
 
