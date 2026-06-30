@@ -130,7 +130,7 @@ function WayangScene({ isPlaying, activeWayang }: WayangSceneProps) {
 // ── KOMPONEN UTAMA EXPORT ───────────────────────────────────────────────────
 export default function DalangPOVSection() {
 	const [isPlaying, setIsPlaying] = useState(false);
-	const activeWayang = "/wayang.png";
+	const activeWayang = "/wayang.webp";
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -230,7 +230,7 @@ export default function DalangPOVSection() {
 				}}>
 				{/* Layer 1: siluet hitam pekat sebagai bentuk dasar */}
 				<img
-					src="/wayangGunungan.png"
+					src="/wayangGunungan.webp"
 					alt=""
 					aria-hidden="true"
 					className="block h-full select-none"
@@ -238,7 +238,7 @@ export default function DalangPOVSection() {
 				/>
 				{/* Layer 2: gambar asli ditumpuk di atas, redup, untuk munculkan corak ukiran */}
 				<img
-					src="/wayangGunungan.png"
+					src="/wayangGunungan.webp"
 					alt=""
 					aria-hidden="true"
 					className="absolute inset-0 block h-full select-none"
@@ -257,14 +257,14 @@ export default function DalangPOVSection() {
 					filter: "drop-shadow(0 10px 40px rgba(0,0,0,0.6))",
 				}}>
 				<img
-					src="/wayangGunungan.png"
+					src="/wayangGunungan.webp"
 					alt=""
 					aria-hidden="true"
 					className="block h-full select-none"
 					style={{ filter: "brightness(0)", opacity: 0.95 }}
 				/>
 				<img
-					src="/wayangGunungan.png"
+					src="/wayangGunungan.webp"
 					alt=""
 					aria-hidden="true"
 					className="absolute inset-0 block h-full select-none"
