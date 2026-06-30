@@ -1,5 +1,5 @@
 // src/components/WayangBackground.tsx
-// Model: public/wayang-parts.glb (Wayang Golek Arjuna terpisah: Head, Upper, Lower)
+// Model: public/wayang-parts-optimized.glb (Wayang Golek Arjuna terpisah: Head, Upper, Lower)
 
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -17,6 +17,8 @@ function WayangModel() {
   const headRef = useRef<THREE.Object3D | null>(null);
   const upperRef = useRef<THREE.Object3D | null>(null);
   const lowerRef = useRef<THREE.Object3D | null>(null);
+  // Simpan posisi Y awal untuk animasi pisah‑satu
+  const initialPositions = useRef({ headY: 0, lowerY: 0 });
 
   const { scene } = useGLTF("/wayang-parts-optimized.glb");
   const initialized = useRef(false);
@@ -69,6 +71,10 @@ function WayangModel() {
     const head = cloned.getObjectByName("Head")!;
     const upper = cloned.getObjectByName("Upper")!;
     const lower = cloned.getObjectByName("Lower")!;
+
+    // Simpan posisi awal untuk animasi kembali
+    initialPositions.current.headY = head.position.y;
+    initialPositions.current.lowerY = lower.position.y;
 
     headRef.current = head;
     upperRef.current = upper;
@@ -160,32 +166,58 @@ function WayangModel() {
     };
   }, [isMobile, startScale]);
 
-  // Animasi anatomi saat scroll #parts: kepala naik, dasar turun
+  // ─── Animasi anatomi: pisah lalu nyatu lagi ─────────────────────────
   useEffect(() => {
-    if (!headRef.current || !upperRef.current || !lowerRef.current) return;
+    if (
+      !headRef.current ||
+      !upperRef.current ||
+      !lowerRef.current ||
+      !initialPositions.current.headY // pastikan sudah terisi
+    )
+      return;
+
+    const headBaseY = initialPositions.current.headY;
+    const lowerBaseY = initialPositions.current.lowerY;
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: "#parts",
         start: "top center",
-        end: "bottom center",
+        // Ruang tambahan setelah #parts keluar viewport agar animasi kembali selesai
+        end: "bottom top+=150%",
         scrub: 1.5,
       },
     });
 
+    // Pisah: kepala naik, dasar turun (40% durasi scroll)
     tl.to(
       headRef.current.position,
-      { y: headRef.current.position.y + 120 },
+      { y: headBaseY + 110, duration: 0.4, ease: "none" },
       0
     );
     tl.to(
       lowerRef.current.position,
-      { y: lowerRef.current.position.y - 120 },
+      { y: lowerBaseY - 110, duration: 0.4, ease: "none" },
       0
     );
 
+    // Nyatu lagi: kembali ke posisi semula (60% durasi scroll tersisa)
+    tl.to(
+      headRef.current.position,
+      { y: headBaseY, duration: 0.6, ease: "none" },
+      0.4
+    );
+    tl.to(
+      lowerRef.current.position,
+      { y: lowerBaseY, duration: 0.6, ease: "none" },
+      0.4
+    );
+
+    const st = tl.scrollTrigger;
+
     return () => {
       tl.kill();
+      st?.kill();
     };
   }, []);
 
