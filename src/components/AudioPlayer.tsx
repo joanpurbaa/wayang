@@ -61,7 +61,7 @@ export default function AudioPlayer() {
 						initial={{ opacity: 0, x: -10 }}
 						animate={{ opacity: 1, x: 0 }}
 						exit={{ opacity: 0, x: -10 }}
-						className="fixed bottom-18 left-5 z-50 bg-black/70 backdrop-blur-md text-amber-300 text-xs px-3 py-2 rounded-lg border border-amber-500/20 whitespace-nowrap">
+						className="hidden md:block fixed bottom-18 left-5 z-50 bg-black/70 backdrop-blur-md text-amber-300 text-xs px-3 py-2 rounded-lg border border-amber-500/20 whitespace-nowrap">
 						Aktifkan suara
 						<div className="absolute left-4 -bottom-1.5 w-2.5 h-2.5 bg-black/70 border-r border-b border-amber-500/20 rotate-45" />
 					</motion.div>
