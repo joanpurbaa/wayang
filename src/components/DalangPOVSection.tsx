@@ -4,7 +4,6 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ── KOMPONEN UTAMA WAYANG 2D ────────────────────────────────────────────────
 function InteractiveWayang2D({
 	texturePath,
 	mousePos,
@@ -54,7 +53,6 @@ function InteractiveWayang2D({
 	);
 }
 
-// ── PANGGUNG DAN LIGHTING (POV DALANG) ──────────────────────────────────────
 interface WayangSceneProps {
 	isPlaying: boolean;
 	activeWayang: string;
@@ -82,7 +80,6 @@ function WayangScene({ isPlaying, activeWayang }: WayangSceneProps) {
 
 	return (
 		<>
-			{/* Lampu Blencong — angle diperlebar supaya area terang lebih luas */}
 			<spotLight
 				ref={lightRef}
 				position={[0, 1.8, 7]}
@@ -107,7 +104,6 @@ function WayangScene({ isPlaying, activeWayang }: WayangSceneProps) {
 				</Suspense>
 			)}
 
-			{/* Kain Kelir Layar Putih */}
 			<mesh position={[0, 0, 0]} receiveShadow>
 				<planeGeometry args={[24, 13]} />
 				<meshStandardMaterial
@@ -118,7 +114,6 @@ function WayangScene({ isPlaying, activeWayang }: WayangSceneProps) {
 				/>
 			</mesh>
 
-			{/* Frame Kayu Hitam Gawang Kelir */}
 			<mesh position={[0, 0, -0.02]}>
 				<planeGeometry args={[24.6, 13.6]} />
 				<meshStandardMaterial color="#140b02" roughness={1} />
@@ -127,7 +122,6 @@ function WayangScene({ isPlaying, activeWayang }: WayangSceneProps) {
 	);
 }
 
-// ── KOMPONEN UTAMA EXPORT ───────────────────────────────────────────────────
 export default function DalangPOVSection() {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const activeWayang = "/wayang.webp";
@@ -138,12 +132,10 @@ export default function DalangPOVSection() {
 	const [showGendangHint, setShowGendangHint] = useState(true);
 
 	useEffect(() => {
-		// Suara gamelan khusus demo wayang — bukan lagu utama
 		audioRef.current = new Audio("/gamelan.mp3");
 		audioRef.current.loop = true;
 		audioRef.current.volume = 0.4;
 
-		// Suara gendang — dipicu klik manual, bukan otomatis
 		gendangAudioRef.current = new Audio("/gendang.mp3");
 		gendangAudioRef.current.volume = 0.7;
 
@@ -153,13 +145,11 @@ export default function DalangPOVSection() {
 		};
 	}, []);
 
-	// Dengarkan jika user keluar fullscreen pakai Esc — sinkronkan state isPlaying
 	useEffect(() => {
 		const handleFsChange = () => {
 			if (!document.fullscreenElement && isPlaying) {
 				setIsPlaying(false);
 				audioRef.current?.pause();
-				// Beritahu AudioPlayer (lagu utama) bahwa demo sudah selesai
 				window.dispatchEvent(new Event("wayang-demo:end"));
 			}
 		};
@@ -167,12 +157,10 @@ export default function DalangPOVSection() {
 		return () => document.removeEventListener("fullscreenchange", handleFsChange);
 	}, [isPlaying]);
 
-	// Pukul gendang pakai keyboard (Enter atau Spasi) — berlaku kapan saja section ini terlihat
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.code !== "Space" && e.code !== "Enter") return;
 
-			// Jangan bentrok kalau user lagi fokus di elemen interaktif lain (tombol, dsb)
 			const tag = (e.target as HTMLElement)?.tagName;
 			if (tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
 
@@ -184,23 +172,20 @@ export default function DalangPOVSection() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// Hint popup otomatis hilang setelah beberapa detik supaya gak ganggu terus
 	useEffect(() => {
-		const timer = window.setTimeout(() => setShowGendangHint(false), 6000);
+		const timer = window.setTimeout(() => setShowGendangHint(false), 60 * 3000);
 		return () => window.clearTimeout(timer);
 	}, []);
 
 	const handleMulaiMendalang = async () => {
 		setIsPlaying(true);
 
-		// Matikan dulu lagu utama (AudioPlayer) sebelum gamelan demo dinyalakan
 		window.dispatchEvent(new Event("wayang-demo:start"));
 
 		audioRef.current
 			?.play()
 			.catch((err) => console.log("Audio autoplay ditangguhkan:", err));
 
-		// Trigger fullscreen browser pada section ini
 		try {
 			if (sectionRef.current && sectionRef.current.requestFullscreen) {
 				await sectionRef.current.requestFullscreen();
@@ -217,12 +202,10 @@ export default function DalangPOVSection() {
 			document.exitFullscreen().catch(() => {});
 		}
 
-		// Beritahu AudioPlayer supaya lagu utama bisa nyala lagi (kalau sebelumnya nyala)
 		window.dispatchEvent(new Event("wayang-demo:end"));
 	};
 
 	const handlePukulGendang = () => {
-		// Replay dari awal supaya bisa diklik berkali-kali cepat
 		if (gendangAudioRef.current) {
 			gendangAudioRef.current.currentTime = 0;
 			gendangAudioRef.current
@@ -236,9 +219,9 @@ export default function DalangPOVSection() {
 
 	return (
 		<section
+			id="dalang"
 			ref={sectionRef}
 			className="relative w-full h-screen bg-[#060403] overflow-hidden flex flex-col items-center justify-center font-sans">
-			{/* Header Informasi */}
 			<div className="absolute top-10 left-0 right-0 z-10 text-center pointer-events-none px-4">
 				<p
 					className="text-xs tracking-[0.5em] uppercase mb-3"
@@ -261,7 +244,6 @@ export default function DalangPOVSection() {
 				</p>
 			</div>
 
-			{/* Canvas full-bleed */}
 			<div className="absolute inset-0 z-0">
 				<Canvas
 					shadows={{ type: THREE.PCFShadowMap }}
@@ -272,9 +254,8 @@ export default function DalangPOVSection() {
 				</Canvas>
 			</div>
 
-			{/* Gunungan kiri — base hitam pekat + overlay tekstur ukiran tipis, sway pelan */}
 			<motion.div
-				className="absolute pointer-events-none select-none z-[3]"
+				className="absolute pointer-events-none select-none z-10"
 				style={{
 					left: "-4%",
 					bottom: "-6%",
@@ -284,7 +265,6 @@ export default function DalangPOVSection() {
 				}}
 				animate={{ rotate: [-7, -5.3, -7] }}
 				transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}>
-				{/* Layer 1: siluet hitam pekat sebagai bentuk dasar */}
 				<img
 					src="/wayangGunungan.webp"
 					alt=""
@@ -292,7 +272,6 @@ export default function DalangPOVSection() {
 					className="block h-full select-none"
 					style={{ filter: "brightness(0)", opacity: 0.95 }}
 				/>
-				{/* Layer 2: gambar asli ditumpuk di atas, redup, untuk munculkan corak ukiran */}
 				<img
 					src="/wayangGunungan.webp"
 					alt=""
@@ -302,9 +281,8 @@ export default function DalangPOVSection() {
 				/>
 			</motion.div>
 
-			{/* Gunungan kanan — mirror, sama treatment-nya, sway berlawanan arah */}
 			<motion.div
-				className="absolute pointer-events-none select-none z-[3]"
+				className="absolute pointer-events-none select-none z-10"
 				style={{
 					right: "-4%",
 					bottom: "-6%",
@@ -337,12 +315,11 @@ export default function DalangPOVSection() {
 				</div>
 			</motion.div>
 
-			{/* Siluet1 — peramai pojok kiri-tengah, tipis, di atas gunungan biar kebaca */}
 			<motion.img
-				src="/siluet1.png"
+				src="/siluet1.webp"
 				alt=""
 				aria-hidden="true"
-				className="absolute pointer-events-none select-none z-[4]"
+				className="absolute pointer-events-none select-none z-10"
 				style={{
 					left: "18%",
 					bottom: "4%",
@@ -355,12 +332,11 @@ export default function DalangPOVSection() {
 				transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
 			/>
 
-			{/* Siluet2 — peramai pojok kanan-tengah, tipis, di atas gunungan biar kebaca */}
 			<motion.img
-				src="/siluet2.png"
+				src="/siluet2.webp"
 				alt=""
 				aria-hidden="true"
-				className="absolute pointer-events-none select-none z-[4]"
+				className="absolute pointer-events-none select-none z-10"
 				style={{
 					right: "18%",
 					bottom: "4%",
@@ -378,39 +354,34 @@ export default function DalangPOVSection() {
 				}}
 			/>
 
-			{/* Vignette tepi — area terang diperlebar (dari 40%/78% jadi 55%/88%) */}
 			<div
-				className="absolute inset-0 pointer-events-none z-[1]"
+				className="absolute inset-0 pointer-events-none z-10"
 				style={{
 					background:
 						"radial-gradient(ellipse at center, transparent 55%, rgba(6,4,3,0.5) 88%, rgba(6,4,3,0.92) 100%)",
 				}}
 			/>
 
-			{/* Garis tepi atas & bawah */}
 			<div
-				className="absolute top-0 left-0 right-0 h-px pointer-events-none z-[2]"
+				className="absolute top-0 left-0 right-0 h-px pointer-events-none z-10"
 				style={{
 					background:
 						"linear-gradient(90deg, transparent 10%, rgba(200,146,42,0.35) 50%, transparent 90%)",
 				}}
 			/>
 			<div
-				className="absolute bottom-0 left-0 right-0 h-px pointer-events-none z-[2]"
+				className="absolute bottom-0 left-0 right-0 h-px pointer-events-none z-10"
 				style={{
 					background:
 						"linear-gradient(90deg, transparent 10%, rgba(200,146,42,0.35) 50%, transparent 90%)",
 				}}
 			/>
 
-			{/* Gendang interaktif — klik untuk mukul, posisi pojok kanan bawah.
-			    z-index sengaja paling tinggi (di atas overlay selamat datang z-20 dan
-			    tombol Selesai z-10) supaya selalu bisa diklik kapan saja. */}
 			<motion.button
 				type="button"
 				onClick={handlePukulGendang}
 				aria-label="Pukul gendang"
-				className="absolute z-[40] select-none"
+				className="absolute z-50 select-none"
 				style={{
 					right: "5%",
 					bottom: "9%",
@@ -422,7 +393,7 @@ export default function DalangPOVSection() {
 				whileHover={{ scale: 1.06 }}
 				transition={{ duration: 0.15, ease: "easeOut" }}>
 				<img
-					src="/gendang.png"
+					src="/gendang.webp"
 					alt=""
 					draggable={false}
 					className="w-full h-auto select-none pointer-events-none"
@@ -434,7 +405,6 @@ export default function DalangPOVSection() {
 					}}
 				/>
 
-				{/* Popup hint sederhana — tunjukin cara pukul gendang via keyboard */}
 				<AnimatePresence>
 					{showGendangHint && (
 						<motion.div
@@ -456,7 +426,6 @@ export default function DalangPOVSection() {
 								Klik gendang, atau tekan <span style={{ color: "#e0ad44" }}>Enter</span>{" "}
 								/ <span style={{ color: "#e0ad44" }}>Spasi</span>
 							</p>
-							{/* Ekor bubble */}
 							<div
 								className="absolute top-full right-6 w-0 h-0"
 								style={{
@@ -470,7 +439,6 @@ export default function DalangPOVSection() {
 				</AnimatePresence>
 			</motion.button>
 
-			{/* Kontrol Layar Selamat Datang */}
 			<AnimatePresence>
 				{!isPlaying && (
 					<motion.div
@@ -490,7 +458,6 @@ export default function DalangPOVSection() {
 								boxShadow:
 									"0 0 60px rgba(200,146,42,0.08), inset 0 1px 0 rgba(255,220,160,0.05)",
 							}}>
-							{/* Ornamen sudut */}
 							<div
 								className="absolute top-0 left-0 w-10 h-10 pointer-events-none"
 								style={{
@@ -524,7 +491,6 @@ export default function DalangPOVSection() {
 								}}
 							/>
 
-							{/* Simbol kecil di atas */}
 							<div
 								className="mx-auto mb-6 w-12 h-12 rounded-full flex items-center justify-center"
 								style={{
@@ -577,7 +543,6 @@ export default function DalangPOVSection() {
 				)}
 			</AnimatePresence>
 
-			{/* Tombol Selesai saat Bermain */}
 			{isPlaying && (
 				<motion.div
 					initial={{ y: 20, opacity: 0 }}

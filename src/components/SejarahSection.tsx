@@ -1,4 +1,3 @@
-// src/components/SejarahSection.tsx
 "use client";
 import { useRef, useState, useEffect } from "react";
 import {
@@ -10,19 +9,15 @@ import {
 } from "framer-motion";
 import { SEJARAH_WAYANG, type EraData } from "../data/sejarahWayang";
 
-// ── Konfigurasi ruangan segi-5 ────────────────────────────────────────────────
-const TOTAL_SISI = SEJARAH_WAYANG.length; // harus 5 biar pas jadi pentagon
-const SUDUT_PER_SISI = 360 / TOTAL_SISI; // 72deg kalau 5 sisi
-const RADIUS_VW = 62; // jarak dinding dari pusat (dalam vw), atur sesuai selera
+const TOTAL_SISI = SEJARAH_WAYANG.length;
+const SUDUT_PER_SISI = 360 / TOTAL_SISI;
+const RADIUS_VW = 62;
 
-// ── Hook: era mana yang aktif berdasarkan rotasi ruangan ─────────────────────
 function useActiveEra(rotateY: any, totalEra: number) {
 	const [activeIndex, setActiveIndex] = useState(0);
 
 	useEffect(() => {
 		const unsubscribe = rotateY.on("change", (deg: number) => {
-			// rotateY ruangan negatif = kamera "muter ke kanan"
-			// setiap SUDUT_PER_SISI derajat = 1 era berikutnya
 			const raw = Math.round(-deg / SUDUT_PER_SISI);
 			const idx = Math.min(totalEra - 1, Math.max(0, raw));
 			setActiveIndex(idx);
@@ -33,7 +28,6 @@ function useActiveEra(rotateY: any, totalEra: number) {
 	return activeIndex;
 }
 
-// ── Progress dots di kiri (timeline marker) ───────────────────────────────────
 function TimelineMarkers({
 	eras,
 	activeIndex,
@@ -87,7 +81,6 @@ function TimelineMarkers({
 	);
 }
 
-// ── Satu dinding/sisi museum (dipasang melingkar di sekitar pusat) ───────────
 function MuseumWall({
 	era,
 	index,
@@ -101,11 +94,6 @@ function MuseumWall({
 		<div
 			className="absolute top-0 left-0 w-full h-full"
 			style={{
-				// Teknik standar "panorama room": rotate dulu ke sudut sisi ke-(index),
-				// lalu dorong MASUK ke layar (translateZ negatif) sejauh radius.
-				// Dengan ini normal permukaan otomatis menghadap ke pusat/kamera,
-				// jadi TIDAK perlu rotateY(180) tambahan — itu yang kemarin bikin
-				// urutan dinding jadi salah posisi.
 				transform: `rotateY(${index * SUDUT_PER_SISI}deg) translateZ(-${RADIUS_VW}vw)`,
 				backfaceVisibility: "hidden",
 			}}>
@@ -160,7 +148,6 @@ function MuseumWall({
 	);
 }
 
-// ── Konten teks overlay per era ───────────────────────────────────────────────
 function EraContent({ era }: { era: EraData }) {
 	return (
 		<motion.div
@@ -209,7 +196,7 @@ function EraContent({ era }: { era: EraData }) {
 				{era.detail.map((d, i) => (
 					<div key={i} className="flex items-start gap-3.5">
 						<div
-							className="mt-2.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
+							className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0"
 							style={{ background: era.warna, boxShadow: `0 0 8px ${era.warna}` }}
 						/>
 						<span
@@ -236,7 +223,6 @@ function EraContent({ era }: { era: EraData }) {
 	);
 }
 
-// ── Section Utama ──────────────────────────────────────────────────────────
 export default function SejarahSection() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const totalEra = TOTAL_SISI;
@@ -246,8 +232,6 @@ export default function SejarahSection() {
 		offset: ["start start", "end end"],
 	});
 
-	// scroll 0 -> 1 dipetakan ke rotasi ruangan 0deg -> -(totalEra-1)*72deg
-	// negatif karena: scroll ke bawah = kamera "muter ke kanan" = ruangan muter ke kiri (relatif kamera)
 	const rawRotateY = useTransform(
 		scrollYProgress,
 		[0, 1],
@@ -268,9 +252,7 @@ export default function SejarahSection() {
 			className="relative"
 			style={{ height: `${totalEra * 100}vh` }}
 			id="sejarah">
-			{/* Sticky viewport — "diam", isinya yang berputar */}
 			<div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
-				{/* Header label kecil */}
 				<div className="absolute top-8 left-6 md:left-16 z-30">
 					<p
 						className="text-xs tracking-[0.5em] uppercase font-medium"
@@ -279,7 +261,6 @@ export default function SejarahSection() {
 					</p>
 				</div>
 
-				{/* Panggung 3D — kamera diam di titik (0,0,0), ruangan berputar mengelilinginya */}
 				<div
 					className="absolute inset-0"
 					style={{
@@ -303,7 +284,6 @@ export default function SejarahSection() {
 					</motion.div>
 				</div>
 
-				{/* Vignette tengah biar transisi antar dinding halus */}
 				<div
 					className="absolute inset-0 pointer-events-none z-10"
 					style={{
@@ -312,17 +292,14 @@ export default function SejarahSection() {
 					}}
 				/>
 
-				{/* Timeline markers kiri */}
 				<TimelineMarkers eras={SEJARAH_WAYANG} activeIndex={activeIndex} />
 
-				{/* Konten teks */}
 				<div className="relative h-full flex items-center z-20">
 					<AnimatePresence mode="wait">
 						<EraContent key={activeEra.id} era={activeEra} />
 					</AnimatePresence>
 				</div>
 
-				{/* Scroll hint (hanya era pertama) */}
 				{activeIndex === 0 && (
 					<motion.div
 						initial={{ opacity: 0 }}
@@ -343,7 +320,6 @@ export default function SejarahSection() {
 					</motion.div>
 				)}
 
-				{/* Progress bar bawah */}
 				<div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 z-30">
 					<motion.div
 						className="h-full"

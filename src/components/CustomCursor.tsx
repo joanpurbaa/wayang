@@ -1,7 +1,3 @@
-// src/components/CustomCursor.tsx
-// Cursor custom berbentuk lingkaran emas dengan dot tengah
-// Tambahkan di App.tsx level paling atas
-
 import { useEffect, useRef } from "react";
 
 export default function CustomCursor() {
@@ -9,27 +5,24 @@ export default function CustomCursor() {
 	const dotRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		// Cek touch device — skip custom cursor
 		if (window.matchMedia("(hover: none)").matches) return;
 
 		let raf: number;
 		let mx = 0,
-			my = 0; // posisi mouse sesungguhnya
+			my = 0;
 		let rx = 0,
-			ry = 0; // posisi ring (lagging)
+			ry = 0;
 
 		const onMove = (e: MouseEvent) => {
 			mx = e.clientX;
 			my = e.clientY;
 
-			// Dot langsung ikut mouse (snappy)
 			if (dotRef.current) {
 				dotRef.current.style.transform = `translate(${mx - 3}px, ${my - 3}px)`;
 			}
 		};
 
 		const animate = () => {
-			// Ring lag mengikuti mouse dengan lerp
 			rx += (mx - rx) * 0.12;
 			ry += (my - ry) * 0.12;
 
@@ -39,7 +32,6 @@ export default function CustomCursor() {
 			raf = requestAnimationFrame(animate);
 		};
 
-		// Efek hover — ring membesar saat di atas elemen interaktif
 		const onEnter = () => {
 			if (ringRef.current) {
 				ringRef.current.style.width = "48px";
@@ -60,7 +52,6 @@ export default function CustomCursor() {
 		document.body.style.cursor = "none";
 		document.addEventListener("mousemove", onMove);
 
-		// Attach hover ke semua elemen interaktif
 		const interactables = document.querySelectorAll(
 			'a, button, [role="button"], input, label',
 		);
@@ -84,10 +75,9 @@ export default function CustomCursor() {
 
 	return (
 		<>
-			{/* Ring luar — lagging */}
 			<div
 				ref={ringRef}
-				className="fixed top-0 left-0 pointer-events-none z-[9999]"
+				className="fixed top-0 left-0 pointer-events-none z-50"
 				style={{
 					width: 32,
 					height: 32,
@@ -98,10 +88,9 @@ export default function CustomCursor() {
 					willChange: "transform",
 				}}
 			/>
-			{/* Dot tengah — snappy */}
 			<div
 				ref={dotRef}
-				className="fixed top-0 left-0 pointer-events-none z-[9999]"
+				className="fixed top-0 left-0 pointer-events-none z-50"
 				style={{
 					width: 6,
 					height: 6,

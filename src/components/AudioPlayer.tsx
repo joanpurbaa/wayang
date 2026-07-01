@@ -1,22 +1,15 @@
-// src/components/AudioPlayer.tsx
-// Tombol toggle gamelan ambient — fixed bottom-left
-// Taruh file audio di: public/colenak.mp3
-
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause } from "lucide-react"; // Import ikon dari lucide-react
+import { Play, Pause } from "lucide-react";
 
 export default function AudioPlayer() {
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const [playing, setPlaying] = useState(false);
-	const [volume] = useState(0.35); // Disederhanakan karena setVolume tidak dipakai secara dinamis
+	const [volume] = useState(0.35);
 	const [showHint, setShowHint] = useState(true);
 
-	// Simpan apakah lagu utama lagi nyala SEBELUM demo wayang dimulai,
-	// supaya bisa kita pulihkan otomatis pas demo selesai.
 	const wasPlayingBeforeDemo = useRef(false);
 
-	// Sembunyikan hint setelah 4 detik
 	useEffect(() => {
 		const t = setTimeout(() => setShowHint(false), 4000);
 		return () => clearTimeout(t);
@@ -34,10 +27,8 @@ export default function AudioPlayer() {
 		}
 	}, [playing, volume]);
 
-	// ── Dengarkan event dari DalangPOVSection ──────────────────────────────
 	useEffect(() => {
 		const handleDemoStart = () => {
-			// Catat state saat ini, lalu paksa lagu utama mati
 			setPlaying((current) => {
 				wasPlayingBeforeDemo.current = current;
 				return false;
@@ -45,7 +36,6 @@ export default function AudioPlayer() {
 		};
 
 		const handleDemoEnd = () => {
-			// Nyalakan lagi HANYA kalau sebelumnya memang lagi diputar
 			if (wasPlayingBeforeDemo.current) {
 				setPlaying(true);
 			}
@@ -65,21 +55,19 @@ export default function AudioPlayer() {
 		<>
 			<audio ref={audioRef} src="/queenst.mp3" preload="none" autoPlay={true} />
 
-			{/* Hint tooltip */}
 			<AnimatePresence>
 				{showHint && (
 					<motion.div
 						initial={{ opacity: 0, x: -10 }}
 						animate={{ opacity: 1, x: 0 }}
 						exit={{ opacity: 0, x: -10 }}
-						className="fixed bottom-[4.5rem] left-5 z-50 bg-black/70 backdrop-blur-md text-amber-300 text-xs px-3 py-2 rounded-lg border border-amber-500/20 whitespace-nowrap">
+						className="fixed bottom-18 left-5 z-50 bg-black/70 backdrop-blur-md text-amber-300 text-xs px-3 py-2 rounded-lg border border-amber-500/20 whitespace-nowrap">
 						Aktifkan suara
 						<div className="absolute left-4 -bottom-1.5 w-2.5 h-2.5 bg-black/70 border-r border-b border-amber-500/20 rotate-45" />
 					</motion.div>
 				)}
 			</AnimatePresence>
 
-			{/* Tombol utama */}
 			<motion.button
 				onClick={toggle}
 				aria-label={playing ? "Matikan gamelan" : "Aktifkan gamelan"}
@@ -87,7 +75,6 @@ export default function AudioPlayer() {
 				whileHover={{ scale: 1.04 }}
 				whileTap={{ scale: 0.95 }}
 				style={{ boxShadow: playing ? "0 0 20px rgba(212,175,55,0.2)" : "none" }}>
-				{/* Kontainer Ikon dengan animasi rotasi/fade ringan dari Framer Motion */}
 				<div className="flex items-center justify-center w-4 h-4 text-amber-400">
 					<motion.div
 						key={playing ? "pause" : "play"}
@@ -97,8 +84,7 @@ export default function AudioPlayer() {
 						{playing ? (
 							<Pause className="w-4 h-4 fill-current" />
 						) : (
-							<Play className="w-4 h-4 fill-current ml-[1px]" />
-							/* ml-[1px] ditambahkan agar ikon play terasa center secara optikal */
+							<Play className="w-4 h-4 fill-current ml-px" />
 						)}
 					</motion.div>
 				</div>

@@ -1,4 +1,3 @@
-// src/App.tsx
 import HeroSection from "./components/HeroSection";
 import TokohSection from "./components/TokohSection";
 import WayangBackground from "./components/WayangBackground";
@@ -16,40 +15,55 @@ import SejarahSection from "./components/SejarahSection";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
-    useEffect(() => {
-        const lenis = new Lenis({
-            duration: 1.4,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-        });
+	useEffect(() => {
+		const lenis = new Lenis({
+			duration: 1.4,
+			easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+			smoothWheel: true,
+		});
 
-        lenis.on("scroll", ScrollTrigger.update);
+		lenis.on("scroll", ScrollTrigger.update);
 
-        const ticker = (time: number) => lenis.raf(time * 1000);
-        gsap.ticker.add(ticker);
-        gsap.ticker.lagSmoothing(0);
+		const ticker = (time: number) => lenis.raf(time * 1000);
+		gsap.ticker.add(ticker);
+		gsap.ticker.lagSmoothing(0);
 
-        return () => {
-            lenis.destroy();
-            gsap.ticker.remove(ticker);
-        };
-    }, []);
+		const resync = () => {
+			lenis.resize();
+			ScrollTrigger.refresh(true);
+		};
 
-    return (
-        <div className="relative">
-            <CustomCursor />
-            <WayangBackground />
-            <AudioPlayer />
+		document.fonts?.ready.then(() => {
+			requestAnimationFrame(resync);
+		});
+		window.addEventListener("load", resync);
+		const t1 = setTimeout(resync, 800);
+		const t2 = setTimeout(resync, 2000);
 
-            <main className="relative z-10 bg-transparent text-[#F5F5F5] font-sans">
-                <HeroSection />
-                <PartsSection />
-                <SejarahSection />
-                <TokohSection />
-                <DalangPOVSection />
-            </main>
+		return () => {
+			lenis.destroy();
+			gsap.ticker.remove(ticker);
+			window.removeEventListener("load", resync);
+			clearTimeout(t1);
+			clearTimeout(t2);
+		};
+	}, []);
 
-            <Footer />
-        </div>
-    );
+	return (
+		<div className="relative">
+			<CustomCursor />
+			<WayangBackground />
+			<AudioPlayer />
+
+			<main className="relative z-10 bg-transparent text-[#F5F5F5] font-sans">
+				<HeroSection />
+				<PartsSection />
+				<SejarahSection />
+				<TokohSection />
+				<DalangPOVSection />
+			</main>
+
+			<Footer />
+		</div>
+	);
 }
