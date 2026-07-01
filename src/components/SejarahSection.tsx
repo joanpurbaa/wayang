@@ -156,10 +156,10 @@ function EraContent({ era }: { era: EraData }) {
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -24 }}
 			transition={{ duration: 0.6, ease: "easeOut" }}
-			className="relative z-10 max-w-2xl px-6 md:px-16 lg:px-28 select-none">
+			className="relative z-10 max-w-2xl px-5 md:px-16 lg:px-28 select-none">
 			<div className="flex items-center gap-5 mb-5">
 				<span
-					className="text-8xl md:text-9xl font-light leading-none"
+					className="text-6xl md:text-9xl font-light leading-none"
 					style={{
 						fontFamily: "'Cormorant Garamond', Georgia, serif",
 						color: era.warna,
@@ -173,7 +173,7 @@ function EraContent({ era }: { era: EraData }) {
 						style={{ background: era.warna, opacity: 0.6 }}
 					/>
 					<span
-						className="text-[12px] tracking-[0.35em] uppercase font-semibold"
+						className="text-[10px] md:text-[12px] tracking-[0.35em] uppercase font-semibold"
 						style={{ color: "rgba(255,255,255,0.6)" }}>
 						{era.periode}
 					</span>
@@ -181,13 +181,13 @@ function EraContent({ era }: { era: EraData }) {
 			</div>
 
 			<h3
-				className="text-5xl md:text-6xl font-normal leading-tight mb-5"
+				className="text-3xl md:text-6xl font-normal leading-tight mb-5"
 				style={{ color: "#fdf8ee" }}>
 				{era.judul}
 			</h3>
 
 			<p
-				className="text-lg md:text-xl leading-relaxed mb-6 font-normal tracking-wide"
+				className="text-sm md:text-xl leading-relaxed mb-6 font-normal tracking-wide"
 				style={{ color: "rgba(255, 255, 255, 0.92)" }}>
 				{era.narasi}
 			</p>
@@ -196,11 +196,11 @@ function EraContent({ era }: { era: EraData }) {
 				{era.detail.map((d, i) => (
 					<div key={i} className="flex items-start gap-3.5">
 						<div
-							className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0"
+							className="mt-2 w-1.5 h-1.5 rounded-full shrink-0"
 							style={{ background: era.warna, boxShadow: `0 0 8px ${era.warna}` }}
 						/>
 						<span
-							className="text-base leading-relaxed font-medium"
+							className="text-xs md:text-base leading-relaxed font-medium"
 							style={{ color: "rgba(255, 255, 255, 0.75)" }}>
 							{d}
 						</span>
@@ -210,7 +210,7 @@ function EraContent({ era }: { era: EraData }) {
 
 			{era.quote && (
 				<p
-					className="text-xl italic leading-relaxed pl-6"
+					className="text-base md:text-xl italic leading-relaxed pl-6"
 					style={{
 						fontFamily: "'Cormorant Garamond', Georgia, serif",
 						color: "rgba(245, 235, 205, 0.95)",

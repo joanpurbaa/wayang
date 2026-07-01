@@ -362,11 +362,6 @@ function LazyCanvas({
 					intensity={2.5}
 				/>
 				<directionalLight position={[-10, 5, -5]} intensity={1} color="#ffffff" />
-				<pointLight
-					position={[0, -5, 5]}
-					intensity={1.2}
-					color={`rgb(${t.r},${t.g},${t.b})`}
-				/>
 				<Suspense fallback={null}>
 					<Stage
 						preset="portrait"
@@ -414,7 +409,7 @@ function useInViewOnce(
 	return [ref, isVisible];
 }
 
-function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
+function TokohCard({ t, index }: { t: any; index: number }) {
 	const cardRef = useRef<HTMLDivElement>(null);
 	const borderRef = useRef<HTMLDivElement>(null);
 	const [observerRef, shouldLoad] = useInViewOnce("300px");
@@ -470,8 +465,13 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 
 	return (
 		<div
-			className="sticky w-full"
-			style={{ top: `calc(60px + ${index * 32}px)` }}>
+			className="sticky w-full top-[60px] md:top-[calc(60px+index*32px)]"
+			style={{
+				top:
+					typeof window !== "undefined" && window.innerWidth >= 768
+						? `calc(60px + ${index * 32}px)`
+						: "60px",
+			}}>
 			<div ref={observerRef}>
 				<motion.div
 					initial={{ opacity: 0, y: 60 }}
@@ -482,25 +482,23 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 						ref={cardRef}
 						onMouseMove={handleMouseMove}
 						onMouseLeave={handleMouseLeave}
-						className="relative rounded-[40px] overflow-hidden cursor-default group"
+						className="relative rounded-[24px] md:rounded-[40px] md:overflow-y-visible overflow-y-visible max-h-none md:max-h-none overflow-x-hidden cursor-default group pb-12 md:pb-0"
 						style={{
 							transition: "transform 0.5s cubic-bezier(0.23,1,0.32,1)",
 							willChange: "transform",
 						}}>
 						<div
-							className="absolute inset-0 rounded-[40px]"
+							className="absolute inset-0 rounded-[24px] md:rounded-[40px]"
 							style={{
-								background: `linear-gradient(145deg,
-                  rgba(24,20,16,0.85) 0%,
-                  rgba(10,9,7,0.93) 50%,
-                  rgba(18,15,12,0.88) 100%)`,
+								background: `linear-gradient(145deg, rgba(24,20,16,0.85) 0%, rgba(10,9,7,0.93) 50%, rgba(18,15,12,0.88) 100%)`,
 								backdropFilter: "blur(40px)",
 								WebkitBackdropFilter: "blur(40px)",
 							}}
 						/>
+
 						<div
 							ref={borderRef}
-							className="absolute inset-0 rounded-[40px] pointer-events-none"
+							className="absolute inset-0 rounded-[24px] md:rounded-[40px] pointer-events-none"
 							style={{
 								padding: "2px",
 								background: `linear-gradient(145deg,
@@ -516,8 +514,9 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 								transition: "background 0.15s ease",
 							}}
 						/>
+
 						<div
-							className="absolute top-0 left-0 right-0 pointer-events-none rounded-t-[40px]"
+							className="absolute top-0 left-0 right-0 pointer-events-none rounded-t-[24px] md:rounded-t-[40px]"
 							style={{
 								height: "1.5px",
 								background: `linear-gradient(90deg, transparent 15%, rgba(${t.r},${t.g},${t.b},0.6) 50%, transparent 85%)`,
@@ -526,10 +525,10 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 							}}
 						/>
 
-						<div className="relative z-10 p-10 md:p-16">
-							<div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+						<div className="relative z-10 p-4 sm:p-10 md:p-16">
+							<div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-14 items-center">
 								<div className="md:col-span-5 w-full flex flex-col gap-4">
-									<div className="relative rounded-[30px] overflow-hidden shadow-2xl border border-white/5 w-full min-h-[480px] md:min-h-[550px] flex items-center justify-center">
+									<div className="relative rounded-[20px] md:rounded-[30px] overflow-hidden shadow-2xl border border-white/5 w-full h-[280px] sm:h-[400px] md:min-h-[550px] flex items-center justify-center">
 										<div
 											className="absolute inset-0"
 											style={{
@@ -552,7 +551,7 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 											}}
 										/>
 										<div
-											className="absolute inset-0 rounded-[30px] z-10 pointer-events-none"
+											className="absolute inset-0 rounded-[20px] md:rounded-[30px] z-10 pointer-events-none"
 											style={{ border: `1px solid rgba(${t.r},${t.g},${t.b},0.15)` }}
 										/>
 									</div>
@@ -560,7 +559,7 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 
 								<div className="md:col-span-7 flex flex-col gap-0 w-full text-left relative">
 									<div
-										className="absolute pointer-events-none"
+										className="absolute pointer-events-none hidden md:block"
 										style={{
 											top: "-154px",
 											right: "-154px",
@@ -572,7 +571,7 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 										}}
 									/>
 									<div
-										className="absolute pointer-events-none"
+										className="absolute pointer-events-none hidden md:block"
 										style={{
 											top: "-120px",
 											right: "-120px",
@@ -582,11 +581,12 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 											border: `1px solid rgba(${t.r},${t.g},${t.b},0.13)`,
 										}}
 									/>
+
 									<h3
 										className="relative z-10"
 										style={{
 											fontFamily: "'Cormorant Garamond', Georgia, serif",
-											fontSize: "clamp(3rem, 5vw, 4.5rem)",
+											fontSize: "clamp(2.2rem, 5vw, 4.5rem)",
 											fontWeight: 300,
 											lineHeight: 0.9,
 											letterSpacing: "-0.02em",
@@ -597,19 +597,19 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 										{t.nama}
 									</h3>
 									<p
-										className="mb-8 relative z-10"
+										className="mb-5 md:mb-8 relative z-10 text-sm md:text-[20px]"
 										style={{
 											fontFamily: "monospace, 'Courier New'",
-											fontSize: "20px",
-											letterSpacing: "0.4em",
+											letterSpacing: "clamp(0.2em, 1.2vw, 0.4em)",
 											textTransform: "uppercase",
 											color: `rgba(${t.r},${t.g},${t.b},0.45)`,
 										}}>
 										{t.gelar}
 									</p>
-									<div className="flex items-center gap-6 mb-10 relative z-10">
-										{t.sifat.map((s, i) => (
-											<div key={s} className="flex flex-col items-center gap-2">
+
+									<div className="flex flex-wrap items-center gap-4 md:gap-6 mb-6 md:mb-10 relative z-10">
+										{t.sifat.map((s: string, i: number) => (
+											<div key={s} className="flex flex-col items-center gap-1.5 md:gap-2">
 												<div
 													style={{
 														width: "40px",
@@ -630,8 +630,8 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 												<span
 													style={{
 														fontFamily: "monospace, 'Courier New'",
-														fontSize: "13px",
-														letterSpacing: "0.3em",
+														fontSize: "11px",
+														letterSpacing: "0.2em",
 														textTransform: "uppercase",
 														color: `rgba(${t.r},${t.g},${t.b},0.45)`,
 													}}>
@@ -640,6 +640,7 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 											</div>
 										))}
 										<div
+											className="hidden sm:block"
 											style={{
 												flex: 1,
 												height: "1px",
@@ -656,18 +657,16 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 												animate={{ opacity: 1, y: 0 }}
 												exit={{ opacity: 0, y: -10 }}
 												transition={{ duration: 0.3 }}
-												className="relative z-10"
+												className="relative z-10 p-5 md:p-8 text-base md:text-[1.4rem]"
 												style={{
 													background: `rgba(${t.r},${t.g},${t.b},0.05)`,
 													border: `1px solid rgba(${t.r},${t.g},${t.b},0.15)`,
 													borderRadius: "12px",
-													padding: "1.5rem 2rem",
 													fontFamily: "'Cormorant Garamond', Georgia, serif",
-													fontSize: "1.4rem",
 													fontStyle: "italic",
-													lineHeight: 1.7,
+													lineHeight: 1.6,
 													color: `rgba(${t.r},${t.g},${t.b},0.9)`,
-													minHeight: "160px",
+													minHeight: "120px",
 												}}>
 												{partDescription}
 											</motion.div>
@@ -679,12 +678,11 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 												exit={{ opacity: 0, y: -10 }}
 												transition={{ duration: 0.3 }}>
 												<div
-													className="relative mb-7 z-10"
+													className="relative mb-5 md:mb-7 z-10 p-4 md:p-6"
 													style={{
 														background: `rgba(${t.r},${t.g},${t.b},0.03)`,
 														border: `1px solid rgba(${t.r},${t.g},${t.b},0.09)`,
 														borderRadius: "6px",
-														padding: "1.25rem 1.5rem",
 													}}>
 													<span
 														className="absolute left-1/2 -translate-x-1/2"
@@ -693,7 +691,7 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 															background: "rgb(14,12,10)",
 															padding: "0 10px",
 															fontSize: "10px",
-															color: `rgba(${t.r},${t.g},${t.b},0.4)`,
+															color: `rgba(${t.r},${t.g},${t.b},0.45)`,
 															lineHeight: 1,
 															display: "block",
 														}}>
@@ -702,9 +700,9 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 													<p
 														style={{
 															fontFamily: "'Cormorant Garamond', Georgia, serif",
-															fontSize: "1.5rem",
+															fontSize: "clamp(1.15rem, 1.8vw, 1.5rem)",
 															fontStyle: "italic",
-															lineHeight: 1.8,
+															lineHeight: 1.7,
 															color: "rgba(255,255,255,0.5)",
 														}}>
 														{t.deskripsi}
@@ -714,10 +712,10 @@ function TokohCard({ t, index }: { t: (typeof TOKOH)[0]; index: number }) {
 													className="relative z-10"
 													style={{
 														fontFamily: "'Cormorant Garamond', Georgia, serif",
-														fontSize: "clamp(1.2rem, 2vw, 1.45rem)",
+														fontSize: "clamp(1.1rem, 2vw, 1.45rem)",
 														fontStyle: "italic",
 														fontWeight: 300,
-														lineHeight: 1.65,
+														lineHeight: 1.6,
 														color: "rgba(220, 205, 170, 0.88)",
 													}}>
 													"{t.filosofi}"
@@ -749,7 +747,7 @@ if (typeof window !== "undefined") {
 
 export default function TokohSection() {
 	return (
-		<section className="relative py-40 px-4 md:px-12" id="tokoh">
+		<section className="relative py-20 md:py-40 px-4 md:px-12" id="tokoh">
 			<div
 				className="absolute left-0 top-0 h-full w-px pointer-events-none"
 				style={{
@@ -758,15 +756,15 @@ export default function TokohSection() {
 				}}
 			/>
 			<div className="max-w-7xl mx-auto">
-				<div className="mb-32 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 px-4">
+				<div className="mb-16 md:mb-32 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 px-2 md:px-4">
 					<div>
 						<p
-							className="text-xs tracking-[0.5em] uppercase mb-4 font-medium"
+							className="text-xs tracking-[0.5em] uppercase mb-3 font-medium"
 							style={{ color: "rgba(200,150,60,0.75)" }}>
 							Para Tokoh
 						</p>
 						<h2
-							className="font-serif text-6xl md:text-8xl font-light leading-tight text-white"
+							className="font-serif text-5xl md:text-8xl font-light leading-tight text-white"
 							style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
 							Raga &amp;{" "}
 							<em className="not-italic" style={{ color: "#c8a84a" }}>
@@ -775,14 +773,14 @@ export default function TokohSection() {
 						</h2>
 					</div>
 					<p
-						className="text-base md:text-lg max-w-md leading-relaxed"
+						className="text-sm md:text-lg max-w-md leading-relaxed"
 						style={{ color: "rgba(255,255,255,0.4)" }}>
 						Setiap karakter adalah cermin — cetak biru leluhur yang dirancang untuk
 						mengajarkan bagaimana keselarasan hidup diarungi di atas panggung
 						realitas.
 					</p>
 				</div>
-				<div className="flex flex-col gap-24 md:gap-36">
+				<div className="flex flex-col gap-12 md:gap-36">
 					{TOKOH.map((t, index) => (
 						<TokohCard key={t.id} t={t} index={index} />
 					))}

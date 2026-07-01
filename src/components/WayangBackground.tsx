@@ -18,8 +18,12 @@ function WayangModel() {
 	const { scene } = useGLTF("/wayang-parts-optimized.glb");
 	const initialized = useRef(false);
 	const { size } = useThree();
+
 	const isMobile = size.width < 768;
-	const startScale = isMobile ? 1.8 : 2.5;
+
+	const startScale = isMobile ? 1.1 : 2.5;
+	const initialX = isMobile ? 0.3 : 1.5;
+	const initialY = isMobile ? -0.5 : -2.2;
 
 	useLayoutEffect(() => {
 		if (!scene || !outerGroupRef.current || initialized.current) return;
@@ -76,14 +80,11 @@ function WayangModel() {
 		innerGroupRef.current.clear();
 		innerGroupRef.current.add(cloned);
 
-		outerGroupRef.current.position.set(
-			isMobile ? 0 : 1.5,
-			isMobile ? -1.5 : -2.2,
-			0,
-		);
+		// Menerapkan posisi awal responsif
+		outerGroupRef.current.position.set(initialX, initialY, 0);
 		outerGroupRef.current.rotation.set(0, 0, 0);
 		outerGroupRef.current.scale.setScalar(startScale);
-	}, [scene, isMobile, startScale]);
+	}, [scene, isMobile, startScale, initialX, initialY]);
 
 	useLayoutEffect(() => {
 		const proxy = { p: 0 };
@@ -108,15 +109,11 @@ function WayangModel() {
 				const t = Math.min(proxy.p / 0.5, 1);
 				const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
-				outerGroupRef.current.position.x = lerp(
-					isMobile ? 0 : 1.5,
-					isMobile ? -0.2 : -0.8,
-					e,
-				);
-				outerGroupRef.current.position.y = lerp(isMobile ? -1.5 : -2.2, -0.2, e);
+				outerGroupRef.current.position.x = lerp(initialX, isMobile ? 0 : -0.8, e);
+				outerGroupRef.current.position.y = lerp(initialY, isMobile ? 0 : -0.2, e);
 				outerGroupRef.current.rotation.y = lerp(0, Math.PI, e);
 				outerGroupRef.current.scale.setScalar(
-					lerp(startScale, isMobile ? 0.8 : 1.2, e),
+					lerp(startScale, isMobile ? 0.6 : 1.2, e),
 				);
 			},
 		});
@@ -129,14 +126,14 @@ function WayangModel() {
 				const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
 				outerGroupRef.current.position.x = lerp(
-					isMobile ? -0.2 : -0.8,
-					isMobile ? -0.8 : -1.6,
+					isMobile ? 0 : -0.8,
+					isMobile ? 0 : -1.6,
 					e,
 				);
-				outerGroupRef.current.position.y = lerp(-0.2, isMobile ? -1.5 : -2.2, e);
+				outerGroupRef.current.position.y = lerp(isMobile ? 0 : -0.2, initialY, e);
 				outerGroupRef.current.rotation.y = lerp(Math.PI, Math.PI * 2, e);
 				outerGroupRef.current.scale.setScalar(
-					lerp(isMobile ? 0.8 : 1.2, startScale, e),
+					lerp(isMobile ? 0.6 : 1.2, startScale, e),
 				);
 			},
 		});
@@ -145,7 +142,7 @@ function WayangModel() {
 			tl.kill();
 			ScrollTrigger.getAll().forEach((st) => st.kill());
 		};
-	}, [isMobile, startScale]);
+	}, [isMobile, startScale, initialX, initialY]);
 
 	useLayoutEffect(() => {
 		if (
@@ -237,7 +234,12 @@ export default function WayangBackground() {
 			ticking = false;
 			if (!wrapperRef.current) return;
 			const rectTop = target.getBoundingClientRect().top;
-			wrapperRef.current.style.zIndex = rectTop <= 0 ? "5" : "20";
+
+			if (window.innerWidth >= 768) {
+				wrapperRef.current.style.zIndex = rectTop <= 0 ? "5" : "20";
+			} else {
+				wrapperRef.current.style.zIndex = "10";
+			}
 		};
 
 		const onScroll = () => {
@@ -301,7 +303,7 @@ export default function WayangBackground() {
 				style={{
 					position: "fixed",
 					inset: 0,
-					zIndex: 1,
+					zIndex: 0,
 					pointerEvents: "none",
 					background:
 						"radial-gradient(ellipse at center, transparent 50%, rgba(5,5,5,0.5) 85%, #050505 100%)",

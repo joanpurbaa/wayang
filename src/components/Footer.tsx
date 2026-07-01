@@ -91,42 +91,45 @@ export default function Footer() {
 			className="relative z-30 bg-[#050505] overflow-hidden">
 			<KawungPattern />
 
-			<div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-80 bg-[radial-gradient(ellipse,rgba(212,175,55,0.09)_0%,transparent_70%)] pointer-events-none" />
+			{/* Menyesuaikan ukuran latar pendar cahaya agar proporsional di mobile */}
+			<div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[700px] h-80 bg-[radial-gradient(ellipse,rgba(212,175,55,0.09)_0%,transparent_70%)] pointer-events-none" />
 			<KelirBorder />
-			<div className="relative z-10 max-w-7xl mx-auto pt-20 pb-8">
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+
+			{/* Tambah px-6 untuk mobile agar konten memiliki jarak aman dari tepi layar */}
+			<div className="relative z-10 max-w-7xl mx-auto pt-14 md:pt-20 pb-8 px-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 mb-14 md:mb-16">
 					<div className="footer-col">
 						<div className="flex items-center gap-4 mb-5">
 							<img
 								src="/icon.svg"
-								className="w-16 h-16 drop-shadow-[0_0_12px_rgba(212,175,55,0.25)]"
+								className="w-14 h-14 md:w-16 md:h-16 drop-shadow-[0_0_12px_rgba(212,175,55,0.25)]"
 								alt=""
 							/>
 							<div>
-								<h3 className="text-[#F5F5F5] font-serif text-2xl md:text-3xl tracking-tight">
+								<h3 className="text-[#F5F5F5] font-serif text-xl md:text-3xl tracking-tight">
 									Wayang Golek
 								</h3>
-								<p className="text-amber-400/60 text-xs tracking-[0.3em] uppercase mt-1">
+								<p className="text-amber-400/60 text-[10px] md:text-xs tracking-[0.3em] uppercase mt-1">
 									Nuansa Jawa
 								</p>
 							</div>
 						</div>
-						<p className="text-white/60 text-base leading-relaxed max-w-md">
+						<p className="text-white/60 text-sm md:text-base leading-relaxed max-w-md">
 							Menjelajahi keagungan seni wayang golek — dari ukiran kayu hingga jiwa
 							pertunjukan yang menghidupkan filsafat Jawa.
 						</p>
 					</div>
 
 					<div className="footer-col md:justify-self-end">
-						<h4 className="text-xs tracking-[0.35em] uppercase text-amber-400/80 font-semibold mb-5">
+						<h4 className="text-[10px] md:text-xs tracking-[0.35em] uppercase text-amber-400/80 font-semibold mb-4 md:mb-5">
 							Navigasi
 						</h4>
-						<ul className="space-y-3.5">
+						<ul className="space-y-2.5 md:space-y-3.5">
 							{navLinks.map((link) => (
 								<li key={link.label}>
 									<a
 										href={link.href}
-										className="group flex items-center gap-2.5 text-white/65 text-lg md:text-xl font-medium hover:text-amber-400 transition-colors duration-300">
+										className="group flex items-center gap-2.5 text-white/65 text-base md:text-xl font-medium hover:text-amber-400 transition-colors duration-300">
 										<span className="block w-0 group-hover:w-4 h-0.5 bg-amber-400 transition-all duration-300" />
 										{link.label}
 									</a>
@@ -138,29 +141,31 @@ export default function Footer() {
 
 				<div className="footer-divider relative h-px bg-white/15 mb-8 origin-left">
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 bg-[#050505] px-4">
-						<span className="block w-8 h-px bg-amber-400/50" />
-						<span className="text-amber-400/60 text-xs">◆</span>
-						<span className="block w-8 h-px bg-amber-400/50" />
+						<span className="block w-6 md:w-8 h-px bg-amber-400/50" />
+						<span className="text-amber-400/60 text-[10px] md:text-xs">◆</span>
+						<span className="block w-6 md:w-8 h-px bg-amber-400/50" />
 					</div>
 				</div>
 
-				<div className="footer-quote text-center mb-8 px-2">
-					<p className="font-serif text-3xl md:text-5xl text-amber-400/90 italic leading-tight tracking-tight">
+				{/* Menyesuaikan ukuran font Jawa agar tidak terpotong/membungkus terlalu berantakan di mobile */}
+				<div className="footer-quote text-center mb-12 md:mb-8 px-2">
+					<p className="font-serif text-xl sm:text-2xl md:text-5xl text-amber-400/90 italic leading-snug md:leading-tight tracking-tight max-w-3xl mx-auto">
 						"Wayang iku dudu wewayangan, nanging kanyataan."
 					</p>
-					<p className="text-white/45 text-xs md:text-sm tracking-widest uppercase mt-3">
+					<p className="text-white/45 text-[10px] md:text-sm tracking-widest uppercase mt-3 max-w-md md:max-w-none mx-auto leading-normal">
 						Wayang bukan sekadar bayangan, melainkan kenyataan
 					</p>
 				</div>
 
-				<div className="flex items-center justify-between pt-2">
-					<p className="text-white/45 text-sm tracking-wide">
+				{/* Mengubah flex-row menjadi flex-col-reverse pada perangkat seluler agar susunan hak cipta dan tombol vertikal rapi */}
+				<div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-2">
+					<p className="text-white/45 text-xs md:text-sm tracking-wide text-center sm:text-left">
 						© {new Date().getFullYear()} Wayang Golek Nuansa Jawa
 					</p>
 					<button
 						onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 						aria-label="Kembali ke atas"
-						className="w-10 h-10 rounded-full border border-amber-500/30 bg-amber-500/5 flex items-center justify-center text-amber-400/70 hover:text-amber-300 hover:border-amber-400/60 hover:bg-amber-500/10 transition-all duration-300">
+						className="w-9 h-9 md:w-10 md:h-10 rounded-full border border-amber-500/30 bg-amber-500/5 flex items-center justify-center text-amber-400/70 hover:text-amber-300 hover:border-amber-400/60 hover:bg-amber-500/10 transition-all duration-300">
 						<IconArrowUp />
 					</button>
 				</div>
