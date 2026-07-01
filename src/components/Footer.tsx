@@ -92,9 +92,7 @@ export default function Footer() {
 			<KawungPattern />
 
 			<div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-80 bg-[radial-gradient(ellipse,rgba(212,175,55,0.09)_0%,transparent_70%)] pointer-events-none" />
-
 			<KelirBorder />
-
 			<div className="relative z-10 max-w-7xl mx-auto pt-20 pb-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
 					<div className="footer-col">
